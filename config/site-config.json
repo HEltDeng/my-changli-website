@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "displayVersion": "V1.0.0",
+  "releaseDate": "",
+  "androidDownloadUrl": "",
+  "apkSize": "",
+  "apkSha256": "",
+  "iosStatus": "coming-soon",
+  "iosDownloadUrl": "",
+  "contact": {
+    "localPart": "2941977651",
+    "domain": "proton.me"
+  },
+  "filing": {
+    "icpNumber": "",
+    "icpUrl": "https://beian.miit.gov.cn/",
+    "publicSecurityNumber": "",
+    "publicSecurityUrl": "",
+    "publicSecurityIcon": ""
+  },
+  "releases": [
+    {
+      "version": "V1.0.0",
+      "status": "正式发布",
+      "current": true,
+      "items": [
+        "Android 首个正式版本",
+        "校园学习服务",
+        "校园生活查询",
+        "提醒功能"
+      ]
+    },
+    {
+      "version": "V2.0.0",
+      "status": "规划中",
+      "current": false,
+      "items": []
+    },
+    {
+      "version": "V3.0.0",
+      "status": "未来规划",
+      "current": false,
+      "items": []
+    }
+  ]
+}
