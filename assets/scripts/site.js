@@ -1,4 +1,5 @@
 const CONFIG_URL = '/config/site-config.json';
+const SUPPORT_CONFIG_URL = '/config/support-config.json';
 
 const setText = (selector, value) => {
   document.querySelectorAll(selector).forEach((element) => {
@@ -35,6 +36,35 @@ const setupCurrentPage = () => {
   document.querySelectorAll('[data-nav-page]').forEach((link) => {
     if (link.dataset.navPage === page) link.setAttribute('aria-current', 'page');
   });
+};
+
+const setupFeatureAnchor = () => {
+  const centerHashTarget = () => {
+    if (!window.location.hash) return;
+
+    let targetId;
+    try {
+      targetId = decodeURIComponent(window.location.hash.slice(1));
+    } catch {
+      return;
+    }
+
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest',
+      });
+    });
+  };
+
+  if (document.readyState === 'complete') centerHashTarget();
+  else window.addEventListener('load', centerHashTarget, { once: true });
+  window.addEventListener('hashchange', centerHashTarget);
 };
 
 const setupMailLinks = (config) => {
@@ -137,9 +167,12 @@ const setupIos = (config) => {
 const setupTimeline = (config) => {
   document.querySelectorAll('[data-release-timeline]').forEach((container) => {
     container.innerHTML = config.releases.map((release) => {
+      const summary = release.summary
+        ? `<p class="timeline-summary">${release.summary}</p>`
+        : '';
       const items = release.items.length
         ? `<ul>${release.items.map((item) => `<li>${item}</li>`).join('')}</ul>`
-        : '<p>具体内容将在对应版本确认后补充。</p>';
+        : '';
       return `
         <article class="timeline-item${release.current ? ' is-current' : ''}">
           <div class="timeline-dot" aria-hidden="true"></div>
@@ -148,11 +181,68 @@ const setupTimeline = (config) => {
               <h2>${release.version}</h2>
               <span>${release.status}</span>
             </div>
+            ${summary}
             ${items}
           </div>
         </article>`;
     }).join('');
   });
+};
+
+const setupSupport = async () => {
+  const buttons = Array.from(document.querySelectorAll('[data-support-button]'));
+  if (!buttons.length) return;
+
+  const panels = Array.from(document.querySelectorAll('[data-support-panel]'));
+  const emptyState = document.querySelector('[data-support-empty]');
+  let supportConfig = { alipayQrImage: '', wechatQrImage: '' };
+
+  const renderPanel = (kind) => {
+    const image = document.querySelector(`[data-support-image="${kind}"]`);
+    const placeholder = document.querySelector(`[data-support-placeholder="${kind}"]`);
+    if (!image || !placeholder) return;
+
+    const source = kind === 'alipay' ? supportConfig.alipayQrImage : supportConfig.wechatQrImage;
+    image.hidden = true;
+    image.removeAttribute('src');
+    placeholder.hidden = false;
+
+    if (!source) return;
+
+    image.onload = () => {
+      image.hidden = false;
+      placeholder.hidden = true;
+    };
+    image.onerror = () => {
+      image.hidden = true;
+      placeholder.hidden = false;
+    };
+    image.src = source;
+  };
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const kind = button.dataset.supportButton;
+      buttons.forEach((item) => item.setAttribute('aria-expanded', String(item === button)));
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.supportPanel !== kind;
+      });
+      if (emptyState) emptyState.hidden = true;
+      renderPanel(kind);
+    });
+  });
+
+  try {
+    const response = await fetch(SUPPORT_CONFIG_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Support config request failed: ${response.status}`);
+    supportConfig = await response.json();
+    const activeButton = buttons.find((button) => button.getAttribute('aria-expanded') === 'true');
+    if (activeButton) renderPanel(activeButton.dataset.supportButton);
+    document.documentElement.dataset.supportConfigState = 'ready';
+  } catch (error) {
+    console.error('Unable to load support configuration.', error);
+    document.documentElement.dataset.supportConfigState = 'error';
+  }
 };
 
 const applyConfig = (config) => {
@@ -179,4 +269,6 @@ const loadConfig = async () => {
 
 setupNavigation();
 setupCurrentPage();
+setupFeatureAnchor();
+setupSupport();
 loadConfig();

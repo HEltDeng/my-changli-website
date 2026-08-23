@@ -5,10 +5,12 @@
 ## 当前状态
 
 - 源码与本地页面验收已完成。
+- 首页学习、生活与提醒入口可跳转到功能页对应分区，并在视口中部定位。
+- 已增加“感谢开源”“支持开发者”页面；支持二维码默认不显示，且当前保持未配置占位状态。
 - Android 平台展示为开放，但真实 APK 地址、发布日期、文件大小和 SHA-256 尚未提供，下载按钮会保持禁用。
 - iOS 入口为灰色不可点击状态。
 - ICP 与公安备案号为空时，页脚备案区域自动隐藏。
-- 本阶段没有连接或修改生产服务器。
+- 本阶段仅执行本地开发与验收，不连接或修改生产服务器。
 
 ## 页面
 
@@ -19,6 +21,8 @@
 | `download.html` | Android 下载中心、文件信息与校验值 |
 | `updates.html` | 配置驱动的纵向版本时间线 |
 | `contact.html` | 联系反馈与投诉举报邮件入口 |
+| `thanks.html` | 开源感谢、上游项目致谢与开发者支持入口 |
+| `support.html` | 配置驱动的支付宝/微信支持二维码展示页 |
 | `privacy.html` | 网站与 APP 信息处理边界说明 |
 | `terms.html` | 服务范围、信息核对与使用边界 |
 | `manual.html` | V1.0.0 软件使用说明书查看与下载 |
@@ -32,6 +36,8 @@ my-changli-website/
 ├─ download.html
 ├─ updates.html
 ├─ contact.html
+├─ thanks.html
+├─ support.html
 ├─ privacy.html
 ├─ terms.html
 ├─ manual.html
@@ -41,12 +47,15 @@ my-changli-website/
 │  ├─ images/
 │  ├─ scripts/site.js
 │  └─ styles/site.css
-├─ config/site-config.json
+├─ config/
+│  ├─ site-config.json
+│  └─ support-config.json
 ├─ qa/
 │  ├─ screenshots/
 │  └─ TEST_REPORT.md
 ├─ scripts/validate-site.mjs
 ├─ DEPLOYMENT.md
+├─ STATIC_ASSETS.md
 └─ vite.config.js
 ```
 
@@ -91,6 +100,15 @@ pnpm preview
 
 不要填写占位下载地址、未签发的备案号或未经最终安装包核验的校验值。
 
+开发者支持二维码集中在 `config/support-config.json`：
+
+| 字段 | 说明 | 当前值 |
+| --- | --- | --- |
+| `alipayQrImage` | 支付宝二维码图片的站内路径 | 空 |
+| `wechatQrImage` | 微信二维码图片的站内路径 | 空 |
+
+两个字段为空时，页面只显示“二维码尚未配置”占位信息。未来应把经开发者确认的图片放入 `assets/images/support/`，填写以 `/assets/images/support/` 开头的站内路径，再执行完整测试；构建流程会自动复制该目录。不要把二维码转换为外部跟踪链接。
+
 ## 内容边界
 
 网站明确说明：“我的长理”由个人开发者开发和维护，是非官方校园辅助工具，与长沙理工大学不存在官方隶属、授权或合作关系。页面功能以 V1.0.0 软件使用说明书为准，不扩展未存在的能力。
@@ -99,3 +117,5 @@ pnpm preview
 
 - 应用图标、APP 界面截图与软件说明书来自“我的长理”V1.0.0 项目材料。
 - 线性界面图标来自 Lucide，许可说明见 `THIRD_PARTY_NOTICES.md`。
+- 上游开源项目致谢见 `thanks.html` 与 `THIRD_PARTY_NOTICES.md`。
+- 静态资源明细见 `STATIC_ASSETS.md`。
