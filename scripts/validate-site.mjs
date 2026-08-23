@@ -100,6 +100,13 @@ for (const feature of requiredFeatures) {
   check(featureHtml.includes(feature), `features.html: required feature missing: ${feature}`);
 }
 
+const siteCss = readFileSync(resolve(root, 'assets/styles/site.css'), 'utf8');
+check(/\.menu-button\s*\{[^}]*min-inline-size:\s*48px;[^}]*min-block-size:\s*48px;/s.test(siteCss), 'site.css: mobile menu button touch target must be at least 48px');
+check(/\.site-nav\[data-open="true"\]\s*\{[^}]*display:\s*flex;[^}]*flex-direction:\s*column;/s.test(siteCss), 'site.css: expanded mobile navigation must use a vertical flex layout');
+check(/\.site-nav a\s*\{[^}]*min-height:\s*48px;/s.test(siteCss), 'site.css: mobile navigation rows must retain a 48px touch target');
+check(siteCss.includes('-webkit-overflow-scrolling: touch'), 'site.css: mobile navigation must support smooth WebView scrolling');
+check(siteCss.includes('.site-nav a:active'), 'site.css: mobile navigation rows must provide touch feedback');
+
 for (const anchor of ['study', 'life', 'assist']) {
   check(featureHtml.includes(`id="${anchor}"`), `features.html: missing centered anchor ${anchor}`);
 }

@@ -96,16 +96,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .site-nav a[aria-current="page"] { color: var(--blue-700); background: var(--blue-050); }
 
 .menu-button {
-  width: 46px;
-  height: 46px;
+  min-inline-size: 48px;
+  min-block-size: 48px;
   display: none;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: 5px;
+  padding: 13px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--white);
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .menu-button span { width: 19px; height: 2px; border-radius: 2px; background: var(--ink-900); }
@@ -488,9 +491,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid rgba(36, 110, 195, 0.35); outline-offset: 3px; }
 
 @media (max-width: 840px) {
-  .menu-button { display: flex; }
+  .menu-button { display: flex; flex: 0 0 auto; }
   .site-nav {
     position: absolute;
+    z-index: 30;
     top: calc(100% + 8px);
     right: 20px;
     left: 20px;
@@ -502,9 +506,30 @@ button, a { -webkit-tap-highlight-color: transparent; }
     box-shadow: var(--shadow);
     max-height: calc(100vh - 96px);
     overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
-  .site-nav[data-open="true"] { display: grid; }
-  .site-nav a { width: 100%; }
+  .site-nav[data-open="true"] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .site-nav a {
+    width: 100%;
+    min-height: 48px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--blue-050);
+    line-height: 1.4;
+    touch-action: manipulation;
+  }
+  .site-nav a[aria-current="page"],
+  .site-nav a:active { background: var(--blue-100); }
   .hero-inner { min-height: auto; grid-template-columns: 1fr; gap: 48px; padding-block: 56px 68px; }
   .hero-copy { text-align: center; }
   .hero-lead, .hero-note { margin-inline: auto; }
