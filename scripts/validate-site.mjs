@@ -146,6 +146,8 @@ check(/\.site-nav\[data-open="true"\]\s*\{[^}]*display:\s*flex;[^}]*flex-directi
 check(/\.site-nav a\s*\{[^}]*min-height:\s*48px;/s.test(siteCss), 'site.css: mobile navigation rows must retain a 48px touch target');
 check(siteCss.includes('-webkit-overflow-scrolling: touch'), 'site.css: mobile navigation must support smooth WebView scrolling');
 check(siteCss.includes('.site-nav a:active'), 'site.css: mobile navigation rows must provide touch feedback');
+check(/\.announcement-dialog\s*\{[^}]*width:\s*calc\(100vw - 32px\);[^}]*width:\s*min\(640px,/s.test(siteCss), 'site.css: announcement dialog must retain an older WebView width fallback before min()');
+check(/\.announcement-dialog-shell\s*\{[^}]*width:\s*100%;[^}]*max-height:\s*80vh;[^}]*max-height:\s*min\(80vh,\s*80dvh\);/s.test(siteCss), 'site.css: announcement shell must retain older WebView size fallbacks');
 check(/\.support-choice\s*\{[^}]*min-height:\s*108px;/s.test(siteCss), 'site.css: support buttons must retain a clear touch target');
 check(siteCss.includes('.support-choice { min-height: 82px; }'), 'site.css: mobile support buttons must retain an 82px touch target');
 check(siteScript.includes("return typeof value === 'string' ? value.trim() : '';"), 'site.js: support configuration values must be normalized');

@@ -142,6 +142,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .announcement-action span { display: inline-block; margin-left: 2px; font-size: 18px; line-height: 0; vertical-align: -1px; }
 
 .announcement-dialog {
+  /* Plain viewport fallbacks keep older Android WebView engines from
+     collapsing the native dialog when CSS min()/dynamic viewport units are
+     unsupported. Modern browsers use the declarations that follow. */
+  width: calc(100vw - 32px);
   width: min(640px, calc(100vw - 32px));
   max-width: 640px;
   max-height: 80vh;
@@ -154,7 +158,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   box-shadow: 0 28px 80px rgba(16, 32, 51, 0.24);
 }
 .announcement-dialog::backdrop { background: rgba(16, 32, 51, 0.42); }
-.announcement-dialog-shell { display: flex; max-height: min(80vh, 80dvh); flex-direction: column; }
+.announcement-dialog-shell { display: flex; width: 100%; max-height: 80vh; max-height: min(80vh, 80dvh); flex-direction: column; }
 .announcement-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 26px 28px 18px; border-bottom: 1px solid var(--line); }
 .announcement-dialog-heading { min-width: 0; }
 .announcement-dialog-heading .section-kicker { margin-bottom: 8px; }
