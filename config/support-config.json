@@ -1,4 +1,7 @@
 {
-  "alipayQrImage": "",
-  "wechatQrImage": ""
+  "alipaySupportUrl": "",
+  "wechatSupportUrl": "",
+
+  "alipayQrImage": "/assets/images/support/alipay.png",
+  "wechatQrImage": "/assets/images/support/wechat.png"
 }

@@ -113,6 +113,59 @@ button, a { -webkit-tap-highlight-color: transparent; }
 
 .menu-button span { width: 19px; height: 2px; border-radius: 2px; background: var(--ink-900); }
 
+.announcement-region { padding-block: 14px 0; }
+.announcement-bar {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 1px solid #cfe0f1;
+  border-radius: 14px;
+  color: var(--ink-700);
+  background: var(--white);
+  box-shadow: 0 8px 22px rgba(22, 61, 102, 0.05);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.announcement-bar:hover { border-color: #a9c8e6; background: var(--blue-050); }
+.announcement-bar:focus-visible { outline-offset: 2px; }
+.announcement-icon { width: 20px; height: 20px; flex: 0 0 20px; color: var(--blue-700); }
+.announcement-label { flex: 0 0 auto; color: var(--ink-900); font-weight: 760; }
+.announcement-separator { flex: 0 0 auto; color: var(--ink-500); }
+.announcement-summary { min-width: 0; flex: 1 1 auto; overflow: hidden; color: var(--ink-700); white-space: nowrap; text-overflow: ellipsis; }
+.announcement-action { flex: 0 0 auto; color: var(--blue-700); font-weight: 720; white-space: nowrap; }
+.announcement-action span { display: inline-block; margin-left: 2px; font-size: 18px; line-height: 0; vertical-align: -1px; }
+
+.announcement-dialog {
+  width: min(640px, calc(100vw - 32px));
+  max-width: 640px;
+  max-height: 80vh;
+  max-height: 80dvh;
+  padding: 0;
+  border: 1px solid #cfe0f1;
+  border-radius: 22px;
+  color: var(--ink-900);
+  background: var(--white);
+  box-shadow: 0 28px 80px rgba(16, 32, 51, 0.24);
+}
+.announcement-dialog::backdrop { background: rgba(16, 32, 51, 0.42); }
+.announcement-dialog-shell { display: flex; max-height: min(80vh, 80dvh); flex-direction: column; }
+.announcement-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; padding: 26px 28px 18px; border-bottom: 1px solid var(--line); }
+.announcement-dialog-heading { min-width: 0; }
+.announcement-dialog-heading .section-kicker { margin-bottom: 8px; }
+.announcement-dialog-heading h2 { margin: 0; overflow-wrap: anywhere; font-size: clamp(22px, 4vw, 30px); line-height: 1.3; }
+.announcement-dialog-date { display: block; margin-top: 8px; color: var(--ink-500); font-size: 12px; }
+.announcement-close { width: 42px; height: 42px; flex: 0 0 42px; display: inline-grid; place-items: center; margin: -6px -8px 0 0; border: 0; border-radius: 12px; color: var(--ink-500); background: transparent; font: inherit; font-size: 30px; line-height: 1; cursor: pointer; }
+.announcement-close:hover { color: var(--ink-900); background: var(--blue-050); }
+.announcement-dialog-body { min-height: 0; max-height: min(52vh, 520px); overflow-y: auto; padding: 24px 28px; color: var(--ink-700); font-size: 15px; line-height: 1.85; white-space: pre-wrap; overflow-wrap: anywhere; overscroll-behavior: contain; }
+.announcement-dialog-footer { display: flex; justify-content: flex-end; padding: 16px 28px 24px; border-top: 1px solid var(--line); }
+.announcement-dialog-footer .button { min-width: 128px; }
+
 .hero { overflow: hidden; background: var(--blue-050); border-bottom: 1px solid var(--line); }
 
 .hero-inner {
@@ -567,6 +620,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .brand { font-size: 17px; }
   .brand img { width: 34px; height: 34px; border-radius: 10px; }
   .site-nav { top: 72px; right: 16px; left: 16px; }
+  .announcement-region { padding-top: 10px; }
+  .announcement-bar { gap: 7px; padding-inline: 12px; font-size: 12px; }
+  .announcement-icon { width: 18px; height: 18px; flex-basis: 18px; }
+  .announcement-action { font-size: 12px; }
+  .announcement-dialog-header { padding: 22px 20px 15px; }
+  .announcement-dialog-body { max-height: 52vh; padding: 20px; font-size: 14px; }
+  .announcement-dialog-footer { padding: 14px 20px 20px; }
+  .announcement-dialog-footer .button { width: 100%; }
   .hero-inner { gap: 42px; padding-block: 46px 56px; }
   .eyebrow { margin-bottom: 14px; font-size: 12px; }
   .hero h1 { font-size: clamp(46px, 16vw, 62px); }

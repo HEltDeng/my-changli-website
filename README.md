@@ -6,11 +6,12 @@
 
 - 源码与本地页面验收已完成。
 - 首页学习、生活与提醒入口可跳转到功能页对应分区，并在视口中部定位。
-- 已增加“感谢开源”“支持开发者”页面；支持二维码默认不显示，且当前保持未配置占位状态。
+- 已增加“感谢开源”“支持开发者”页面；支持信息默认不显示，点击后优先打开已配置链接，链接为空时再显示对应二维码。
+- 首页已接入独立网站公告接口：公告栏位于导航下方，详情使用可访问的原生弹窗，未读状态按公告 `id + updatedAt` 保存在浏览器本地；APP公告不会串入官网。
 - Android 平台展示为开放，但真实 APK 地址、发布日期、文件大小和 SHA-256 尚未提供，下载按钮会保持禁用。
 - iOS 入口为灰色不可点击状态。
-- ICP 与公安备案号为空时，页脚备案区域自动隐藏。
-- 本阶段仅执行本地开发与验收，不连接或修改生产服务器。
+- ICP 备案号 `湘ICP备2026035265号-1` 已写入配置并出现在十个公开页面页脚；公安联网备案字段为空并自动隐藏。
+- 本阶段仅执行本地开发与验收，不连接或修改生产服务器；网站公告表、后台 CRUD 与公开接口均在本地代码和隔离测试数据库验证。
 
 ## 页面
 
@@ -22,7 +23,7 @@
 | `updates.html` | 配置驱动的纵向版本时间线 |
 | `contact.html` | 联系反馈与投诉举报邮件入口 |
 | `thanks.html` | 开源感谢、上游项目致谢与开发者支持入口 |
-| `support.html` | 配置驱动的支付宝/微信支持二维码展示页 |
+| `support.html` | 配置驱动的支付宝/微信支持入口，链接优先、二维码兜底 |
 | `privacy.html` | 网站与 APP 信息处理边界说明 |
 | `terms.html` | 服务范围、信息核对与使用边界 |
 | `manual.html` | V1.0.0 软件使用说明书查看与下载 |
@@ -49,8 +50,12 @@ my-changli-website/
 │  └─ styles/site.css
 ├─ config/
 │  ├─ site-config.json
-│  └─ support-config.json
+│  ├─ support-config.json
+│  └─ SUPPORT_CONFIG.md
+├─ ANNOUNCEMENTS.md
 ├─ qa/
+│  ├─ ANNOUNCEMENT_TEST_REPORT.md
+│  ├─ mock-public-api.mjs
 │  ├─ screenshots/
 │  └─ TEST_REPORT.md
 ├─ scripts/validate-site.mjs
@@ -94,20 +99,28 @@ pnpm preview
 | `apkSha256` | 最终 APK 的 SHA-256 | 空 |
 | `iosStatus` | iOS 发布状态 | `coming-soon` |
 | `iosDownloadUrl` | iOS 正式发布地址；未发布时留空 | 空 |
+| `publicApiBaseUrl` | 公共 API 基地址；留空使用同源 `/api/v1` | 空（待人工部署网关） |
+| `publicWebsiteAnnouncementsPath` | 网站公告公开路径 | `/public/website-announcements` |
 | `releases` | 最新在前的版本时间线数据 | V1/V2/V3 |
 | `contact` | 邮箱地址拆分字段，由脚本生成 `mailto:` | 已配置 |
-| `filing` | ICP 与公安备案信息 | 编号为空 |
+| `filing` | ICP 与公安备案信息 | ICP `湘ICP备2026035265号-1`；公安备案为空 |
 
 不要填写占位下载地址、未签发的备案号或未经最终安装包核验的校验值。
 
-开发者支持二维码集中在 `config/support-config.json`：
+开发者支持入口集中在 `config/support-config.json`：
 
 | 字段 | 说明 | 当前值 |
 | --- | --- | --- |
-| `alipayQrImage` | 支付宝二维码图片的站内路径 | 空 |
-| `wechatQrImage` | 微信二维码图片的站内路径 | 空 |
+| `alipaySupportUrl` | 支付宝 HTTPS 支持链接；存在时优先打开 | 空 |
+| `wechatSupportUrl` | 微信 HTTPS 支持链接；存在时优先打开 | 空 |
+| `alipayQrImage` | 支付宝二维码图片的站内路径 | `/assets/images/support/alipay.png` |
+| `wechatQrImage` | 微信二维码图片的站内路径 | `/assets/images/support/wechat.png` |
 
-两个字段为空时，页面只显示“二维码尚未配置”占位信息。未来应把经开发者确认的图片放入 `assets/images/support/`，填写以 `/assets/images/support/` 开头的站内路径，再执行完整测试；构建流程会自动复制该目录。不要把二维码转换为外部跟踪链接。
+页面初始状态不展示链接或二维码。点击按钮时会优先打开对应 `SupportUrl`；链接为空时读取对应 `QrImage` 并在当前页面显示。支持链接必须使用 HTTPS，二维码必须放在 `assets/images/support/` 并使用站内路径；构建流程会自动复制该目录。不要填写外部短链、跟踪链接或任何密钥、令牌与登录凭据。
+
+逐字段填写、验收顺序和安全边界见 [`config/SUPPORT_CONFIG.md`](config/SUPPORT_CONFIG.md)。
+
+动态公告的后端审计、响应样例、同源代理和本地已读逻辑见 [`ANNOUNCEMENTS.md`](ANNOUNCEMENTS.md)。本地 mock API 可用 `node qa/mock-public-api.mjs` 启动在 `127.0.0.1:8788`，仅供浏览器场景测试，不连接生产服务。
 
 ## 内容边界
 

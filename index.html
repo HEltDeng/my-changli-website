@@ -35,11 +35,37 @@
       </div>
     </header>
 
+    <div class="container announcement-region" data-announcement-region hidden>
+      <button class="announcement-bar" type="button" data-announcement-trigger aria-controls="announcement-dialog" aria-haspopup="dialog">
+        <svg class="announcement-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 10v4h3l4 3V7l-4 3H4Zm11.5-2.5a5 5 0 0 1 0 9M17.5 5a8.5 8.5 0 0 1 0 14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/></svg>
+        <span class="announcement-label">最新公告</span>
+        <span class="announcement-separator" aria-hidden="true">·</span>
+        <span class="announcement-summary" data-announcement-summary></span>
+        <span class="announcement-action">查看详情 <span aria-hidden="true">›</span></span>
+      </button>
+    </div>
+
+    <dialog class="announcement-dialog" id="announcement-dialog" data-announcement-dialog aria-modal="true" aria-labelledby="announcement-dialog-title" aria-describedby="announcement-dialog-content">
+      <div class="announcement-dialog-shell">
+        <header class="announcement-dialog-header">
+          <div class="announcement-dialog-heading">
+            <p class="section-kicker">最新公告</p>
+            <h2 id="announcement-dialog-title" data-announcement-dialog-title></h2>
+            <time class="announcement-dialog-date" data-announcement-date></time>
+          </div>
+          <button class="announcement-close" type="button" data-announcement-close aria-label="关闭公告">×</button>
+        </header>
+        <div class="announcement-dialog-body" id="announcement-dialog-content" data-announcement-content tabindex="0"></div>
+        <footer class="announcement-dialog-footer">
+          <button class="button button-primary" type="button" data-announcement-confirm>确认已读</button>
+        </footer>
+      </div>
+    </dialog>
+
     <main id="main-content">
       <section class="hero">
         <div class="container hero-inner">
           <div class="hero-copy">
-            <p class="eyebrow">我的长理</p>
             <h1>我的长理</h1>
             <p class="version-line"><span data-app-version>V1.0.0</span><span class="status-badge">Android 已开放</span></p>
             <p class="hero-lead">校园学习与生活辅助工具。</p>
@@ -56,10 +82,10 @@
           </div>
           <div class="hero-visual" aria-label="我的长理应用首页预览">
             <div class="phone-frame">
-              <img src="/assets/images/app-home.png" width="1080" height="2400" alt="我的长理 V1.0.0 首页界面">
+              <img src="/assets/images/app-home.jpg" width="1200" height="2664" alt="我的长理 V1.0.0 首页界面">
             </div>
             <div class="visual-card" aria-hidden="true">
-              <strong>清晰 · 可信 · 克制</strong>
+              <strong>安全 · 稳定 · 可靠</strong>
               <span>发布与下载信息集中呈现</span>
             </div>
           </div>
@@ -69,7 +95,7 @@
       <section class="section" id="features-preview">
         <div class="container">
           <p class="section-kicker section-question">这是什么：</p>
-          <h2 class="section-title product-definition">我的长理是一款面向校园学习与生活场景的 Android 应用，帮助学生更方便地查询课程、成绩、考试安排以及使用校园相关服务。</h2>
+          <h2 class="section-title product-definition">我的长理是一款面向校园学习与生活场景的应用，帮助学生更方便地查询课程、成绩、考试安排以及使用校园相关服务。</h2>
           <div class="intro-grid">
             <a class="intro-card" href="features.html#study">
               <span>01 · 学习</span>
@@ -94,7 +120,7 @@
       <section class="section section-muted future-section">
         <div class="container future-card">
           <div><p class="section-kicker">未来展望</p><h2>持续倾听，稳步完善。</h2></div>
-          <p>我们会持续优化产品体验，认真倾听用户反馈，让校园服务更加简单、便捷。</p>
+          <p>我们会持续优化产品体验，认真倾听用户反馈，让校园生活服务更加简单、便捷。</p>
         </div>
       </section>
     </main>
@@ -113,7 +139,7 @@
           <a href="thanks.html">感谢</a>
         </nav>
       </div>
-      <div class="container footer-filing" data-filing hidden></div>
+      <div class="container footer-filing" data-filing><span>© 2026 我的长理</span><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">湘ICP备2026035265号-1</a></div>
     </footer>
   </body>
 </html>

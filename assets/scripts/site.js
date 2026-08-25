@@ -1,5 +1,8 @@
 const CONFIG_URL = '/config/site-config.json';
 const SUPPORT_CONFIG_URL = '/config/support-config.json';
+const PUBLIC_ANNOUNCEMENT_TIMEOUT_MS = 4500;
+const PUBLIC_ANNOUNCEMENT_REFRESH_MS = 5 * 60 * 1000;
+const ANNOUNCEMENT_READ_KEY_PREFIX = 'mychangli:web-announcement-read:';
 
 const setText = (selector, value) => {
   document.querySelectorAll(selector).forEach((element) => {
@@ -67,6 +70,213 @@ const setupFeatureAnchor = () => {
   window.addEventListener('hashchange', centerHashTarget);
 };
 
+const announcementTimestamp = (value) => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim()) {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) return numeric;
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return 0;
+};
+
+const normalizeAnnouncement = (value) => {
+  if (!value || typeof value !== 'object') return null;
+  const id = value.id === undefined || value.id === null ? '' : String(value.id).trim();
+  const title = typeof value.title === 'string' ? value.title.trim() : '';
+  const content = typeof value.content === 'string' ? value.content : '';
+  if (!id || !title || !content.trim()) return null;
+
+  const publishedAt = value.published_at ?? value.publishedAt ?? '';
+  const updatedAt = value.updated_at ?? value.updatedAt ?? publishedAt;
+  return { id, title, content, publishedAt, updatedAt };
+};
+
+const extractAnnouncements = (payload) => {
+  const data = payload && typeof payload === 'object' && payload.data && typeof payload.data === 'object'
+    ? payload.data
+    : payload;
+  if (!data || !Array.isArray(data.websiteAnnouncements)) return [];
+
+  return data.websiteAnnouncements
+    .map(normalizeAnnouncement)
+    .filter(Boolean)
+    .sort((left, right) => (
+      announcementTimestamp(right.publishedAt) - announcementTimestamp(left.publishedAt)
+      || announcementTimestamp(right.updatedAt) - announcementTimestamp(left.updatedAt)
+    ));
+};
+
+const formatAnnouncementDate = (value) => {
+  const timestamp = announcementTimestamp(value);
+  if (!timestamp) return '发布日期待配置';
+  const date = new Date(timestamp < 100000000000 ? timestamp * 1000 : timestamp);
+  if (Number.isNaN(date.getTime())) return '发布日期待配置';
+  return new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date).replaceAll('/', '-');
+};
+
+const announcementReadKey = (announcement) => (
+  `${ANNOUNCEMENT_READ_KEY_PREFIX}${announcement.id}:${String(announcement.updatedAt || announcement.publishedAt || '')}`
+);
+
+const isAnnouncementRead = (announcement) => {
+  try {
+    return window.localStorage.getItem(announcementReadKey(announcement)) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const markAnnouncementRead = (announcement) => {
+  try {
+    window.localStorage.setItem(announcementReadKey(announcement), '1');
+  } catch {
+    // A storage-disabled browser should still be able to read the notice.
+  }
+};
+
+const publicWebsiteAnnouncementsUrl = (config) => {
+  const configuredBase = typeof config.publicApiBaseUrl === 'string'
+    ? config.publicApiBaseUrl.trim()
+    : '';
+  const base = (configuredBase || '/api/v1').replace(/\/+$/, '');
+  if (base.endsWith('/public/website-announcements')) return base;
+  const configuredPath = typeof config.publicWebsiteAnnouncementsPath === 'string'
+    ? config.publicWebsiteAnnouncementsPath.trim()
+    : '/public/website-announcements';
+  return `${base}/${configuredPath.replace(/^\/+/, '')}`;
+};
+
+const setupAnnouncements = (config) => {
+  const region = document.querySelector('[data-announcement-region]');
+  const dialog = document.querySelector('[data-announcement-dialog]');
+  const trigger = document.querySelector('[data-announcement-trigger]');
+  if (!region || !dialog || !trigger || typeof dialog.showModal !== 'function') return;
+
+  const summary = region.querySelector('[data-announcement-summary]');
+  const dialogTitle = dialog.querySelector('[data-announcement-dialog-title]');
+  const dialogDate = dialog.querySelector('[data-announcement-date]');
+  const dialogContent = dialog.querySelector('[data-announcement-content]');
+  const closeButton = dialog.querySelector('[data-announcement-close]');
+  const confirmButton = dialog.querySelector('[data-announcement-confirm]');
+  if (!summary || !dialogTitle || !dialogDate || !dialogContent || !closeButton || !confirmButton) return;
+
+  let latestAnnouncement = null;
+  let lastLoadedAt = 0;
+  let previouslyFocused = trigger;
+
+  const focusableElements = () => Array.from(dialog.querySelectorAll(
+    'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+  )).filter((element) => !element.hidden && element.getClientRects().length > 0);
+
+  const closeDialog = () => {
+    if (dialog.open) dialog.close();
+    if (previouslyFocused && previouslyFocused.isConnected) previouslyFocused.focus();
+  };
+
+  const openDialog = (announcement) => {
+    if (!announcement) return;
+    latestAnnouncement = announcement;
+    dialogTitle.textContent = announcement.title;
+    dialogDate.textContent = formatAnnouncementDate(announcement.publishedAt);
+    dialogDate.dateTime = String(announcement.publishedAt || '');
+    dialogContent.textContent = announcement.content;
+    const activeElement = document.activeElement;
+    previouslyFocused = activeElement instanceof HTMLElement
+      && activeElement !== document.body
+      && !dialog.contains(activeElement)
+      ? activeElement
+      : trigger;
+    if (!dialog.open) dialog.showModal();
+    window.requestAnimationFrame(() => {
+      closeButton.focus();
+    });
+  };
+
+  const handleDialogKeydown = (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeDialog();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = focusableElements();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  const renderAnnouncement = (announcement) => {
+    latestAnnouncement = announcement;
+    summary.textContent = announcement.title;
+    region.hidden = false;
+  };
+
+  const hideAnnouncement = () => {
+    latestAnnouncement = null;
+    region.hidden = true;
+    if (dialog.open) closeDialog();
+  };
+
+  const loadAnnouncements = async ({ force = false } = {}) => {
+    if (!force && lastLoadedAt && Date.now() - lastLoadedAt < PUBLIC_ANNOUNCEMENT_REFRESH_MS) return;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), PUBLIC_ANNOUNCEMENT_TIMEOUT_MS);
+    try {
+      const response = await fetch(publicWebsiteAnnouncementsUrl(config), {
+        cache: 'no-cache',
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error(`Website announcement request failed: ${response.status}`);
+      const announcements = extractAnnouncements(await response.json());
+      lastLoadedAt = Date.now();
+      if (!announcements.length) {
+        hideAnnouncement();
+        return;
+      }
+      const announcement = announcements[0];
+      renderAnnouncement(announcement);
+      if (!isAnnouncementRead(announcement)) {
+        window.requestAnimationFrame(() => openDialog(announcement));
+      }
+    } catch (error) {
+      hideAnnouncement();
+      console.warn('Announcement feed unavailable; continuing without it.', error);
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  };
+
+  trigger.addEventListener('click', () => openDialog(latestAnnouncement));
+  closeButton.addEventListener('click', closeDialog);
+  confirmButton.addEventListener('click', () => {
+    if (latestAnnouncement) markAnnouncementRead(latestAnnouncement);
+    closeDialog();
+  });
+  dialog.addEventListener('keydown', handleDialogKeydown);
+  dialog.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    closeDialog();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') loadAnnouncements();
+  });
+
+  loadAnnouncements();
+};
+
 const setupMailLinks = (config) => {
   const address = `${config.contact.localPart}@${config.contact.domain}`;
   const subjects = {
@@ -82,20 +292,53 @@ const setupMailLinks = (config) => {
 
 const setupFiling = (config) => {
   document.querySelectorAll('[data-filing]').forEach((container) => {
-    const links = [];
-    if (config.filing.icpNumber) {
-      links.push(`<a href="${config.filing.icpUrl}" rel="noopener noreferrer">${config.filing.icpNumber}</a>`);
+    const filing = config.filing || {};
+    const icpNumber = typeof filing.icpNumber === 'string' ? filing.icpNumber.trim() : '';
+    const icpUrl = typeof filing.icpUrl === 'string' ? filing.icpUrl.trim() : '';
+    const publicSecurityNumber = typeof filing.publicSecurityNumber === 'string'
+      ? filing.publicSecurityNumber.trim()
+      : '';
+    const publicSecurityUrl = typeof filing.publicSecurityUrl === 'string'
+      ? filing.publicSecurityUrl.trim()
+      : '';
+    const publicSecurityIcon = typeof filing.publicSecurityIcon === 'string'
+      ? filing.publicSecurityIcon.trim()
+      : '';
+
+    container.replaceChildren();
+    if (!icpNumber && !(publicSecurityNumber && publicSecurityUrl)) {
+      container.hidden = true;
+      return;
     }
-    if (config.filing.publicSecurityNumber && config.filing.publicSecurityUrl) {
-      const icon = config.filing.publicSecurityIcon
-        ? `<img src="${config.filing.publicSecurityIcon}" alt="" width="18" height="18">`
-        : '';
-      links.push(`<a href="${config.filing.publicSecurityUrl}" rel="noopener noreferrer">${icon}${config.filing.publicSecurityNumber}</a>`);
+
+    const copyright = document.createElement('span');
+    copyright.textContent = '© 2026 我的长理';
+    container.append(copyright);
+    if (icpNumber && icpUrl) {
+      const link = document.createElement('a');
+      link.href = icpUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = icpNumber;
+      container.append(link);
     }
-    if (links.length) {
-      container.innerHTML = links.join('');
-      container.hidden = false;
+    if (publicSecurityNumber && publicSecurityUrl) {
+      const link = document.createElement('a');
+      link.href = publicSecurityUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      if (publicSecurityIcon) {
+        const icon = document.createElement('img');
+        icon.src = publicSecurityIcon;
+        icon.alt = '';
+        icon.width = 18;
+        icon.height = 18;
+        link.append(icon);
+      }
+      link.append(document.createTextNode(publicSecurityNumber));
+      container.append(link);
     }
+    container.hidden = false;
   });
 };
 
@@ -195,14 +438,39 @@ const setupSupport = async () => {
 
   const panels = Array.from(document.querySelectorAll('[data-support-panel]'));
   const emptyState = document.querySelector('[data-support-empty]');
-  let supportConfig = { alipayQrImage: '', wechatQrImage: '' };
+  let supportConfig = {
+    alipaySupportUrl: '',
+    wechatSupportUrl: '',
+    alipayQrImage: '',
+    wechatQrImage: '',
+  };
+  const supportFields = {
+    alipay: { url: 'alipaySupportUrl', image: 'alipayQrImage' },
+    wechat: { url: 'wechatSupportUrl', image: 'wechatQrImage' },
+  };
+  const getSupportValue = (field) => {
+    const value = supportConfig[field];
+    return typeof value === 'string' ? value.trim() : '';
+  };
+  const getSupportUrl = (field) => {
+    const value = getSupportValue(field);
+    if (!value) return '';
+
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && url.hostname ? url.href : '';
+    } catch {
+      return '';
+    }
+  };
 
   const renderPanel = (kind) => {
     const image = document.querySelector(`[data-support-image="${kind}"]`);
     const placeholder = document.querySelector(`[data-support-placeholder="${kind}"]`);
-    if (!image || !placeholder) return;
+    const fields = supportFields[kind];
+    if (!image || !placeholder || !fields) return;
 
-    const source = kind === 'alipay' ? supportConfig.alipayQrImage : supportConfig.wechatQrImage;
+    const source = getSupportValue(fields.image);
     image.hidden = true;
     image.removeAttribute('src');
     placeholder.hidden = false;
@@ -220,9 +488,28 @@ const setupSupport = async () => {
     image.src = source;
   };
 
+  try {
+    const response = await fetch(SUPPORT_CONFIG_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Support config request failed: ${response.status}`);
+    supportConfig = { ...supportConfig, ...await response.json() };
+    document.documentElement.dataset.supportConfigState = 'ready';
+  } catch (error) {
+    console.error('Unable to load support configuration.', error);
+    document.documentElement.dataset.supportConfigState = 'error';
+  }
+
   buttons.forEach((button) => {
     button.addEventListener('click', () => {
       const kind = button.dataset.supportButton;
+      const fields = supportFields[kind];
+      if (!fields) return;
+
+      const supportUrl = getSupportUrl(fields.url);
+      if (supportUrl) {
+        window.location.assign(supportUrl);
+        return;
+      }
+
       buttons.forEach((item) => item.setAttribute('aria-expanded', String(item === button)));
       panels.forEach((panel) => {
         panel.hidden = panel.dataset.supportPanel !== kind;
@@ -231,18 +518,6 @@ const setupSupport = async () => {
       renderPanel(kind);
     });
   });
-
-  try {
-    const response = await fetch(SUPPORT_CONFIG_URL, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Support config request failed: ${response.status}`);
-    supportConfig = await response.json();
-    const activeButton = buttons.find((button) => button.getAttribute('aria-expanded') === 'true');
-    if (activeButton) renderPanel(activeButton.dataset.supportButton);
-    document.documentElement.dataset.supportConfigState = 'ready';
-  } catch (error) {
-    console.error('Unable to load support configuration.', error);
-    document.documentElement.dataset.supportConfigState = 'error';
-  }
 };
 
 const applyConfig = (config) => {
@@ -253,6 +528,7 @@ const applyConfig = (config) => {
   setupDownload(config);
   setupIos(config);
   setupTimeline(config);
+  setupAnnouncements(config);
   document.documentElement.dataset.configState = 'ready';
 };
 

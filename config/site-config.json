@@ -1,18 +1,20 @@
 {
   "version": "1.0.0",
   "displayVersion": "V1.0.0",
-  "releaseDate": "",
-  "androidDownloadUrl": "",
-  "apkSize": "",
-  "apkSha256": "",
+  "releaseDate": "2026-08-24",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.0.apk",
+  "apkSize": "5.76 MiB",
+  "apkSha256": "66764E96822D302885340EF2222A660988B0A44921462698A4DA4590FF7DF96C",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
+  "publicApiBaseUrl": "",
+  "publicWebsiteAnnouncementsPath": "/public/website-announcements",
   "contact": {
     "localPart": "2941977651",
     "domain": "proton.me"
   },
   "filing": {
-    "icpNumber": "",
+    "icpNumber": "湘ICP备2026035265号-1",
     "icpUrl": "https://beian.miit.gov.cn/",
     "publicSecurityNumber": "",
     "publicSecurityUrl": "",
@@ -25,8 +27,8 @@
       "current": true,
       "summary": "正式发布首个版本。",
       "items": [
-        "Android 应用正式发布",
         "校园学习服务",
+        "教务查询",
         "校园生活查询",
         "上课提醒",
         "桌面小组件"
@@ -41,7 +43,7 @@
     },
     {
       "version": "V3.0.0",
-      "status": "未来规划",
+      "status": "规划中",
       "current": false,
       "summary": "",
       "items": []

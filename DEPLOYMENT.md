@@ -43,19 +43,23 @@
 
 版本时间线完全由 `releases` 配置生成，新增时间线节点不需要改页面结构。
 
-## 4. 支持二维码替换流程
+## 4. 支持入口替换流程
 
 1. 仅使用开发者本人确认可公开展示的支付宝收款码和微信商家码图片。
-2. 压缩图片并保存到 `assets/images/support/`，文件名使用稳定的英文小写名称，例如 `alipay.png`。
-3. 在 `config/support-config.json` 中填写站内路径，例如 `/assets/images/support/alipay.png`；不要填写外部短链、统计链接或不明来源图片。
+2. 如需优先跳转，在 `config/support-config.json` 的 `alipaySupportUrl` 或 `wechatSupportUrl` 填写经确认的 HTTPS 地址；留空则不跳转。
+3. 二维码兜底图片保存到 `assets/images/support/`，文件名使用稳定的英文小写名称，例如 `alipay.png`，并在对应 `QrImage` 字段填写站内路径；不要填写外部短链、统计链接或不明来源图片。
 4. 执行 `pnpm test`、`pnpm build` 和 `pnpm preview`。
-5. 检查 `support.html` 初始状态仍不显示二维码；只有点击对应按钮后才显示已配置图片。
+5. 检查 `support.html` 初始状态不显示支付信息；链接存在时点击后打开链接，链接为空时点击后才显示已配置图片。
 
-配置为空或图片加载失败时，页面自动显示占位信息，不展示无效图片。
+链接、二维码均为空或图片加载失败时，页面自动显示占位信息，不展示无效图片。
+
+支付链接的逐字段配置与真实手机验收清单见 `config/SUPPORT_CONFIG.md`。
 
 ## 5. 备案信息更新
 
-取得真实编号后再填写 `filing.icpNumber`、`filing.publicSecurityNumber` 和对应链接。两类编号均为空时，备案区域保持隐藏；禁止使用示例编号。
+当前已核实的网站 ICP 备案号为 `湘ICP备2026035265号-1`，已写入 `config/site-config.json` 的 `filing.icpNumber`，备案链接为 `https://beian.miit.gov.cn/`。公安联网备案字段仍为空并保持隐藏。
+
+以后取得新的真实信息时，只填写 `filing.icpNumber`、`filing.publicSecurityNumber` 和对应链接；任何空字段都应保持隐藏，禁止使用示例编号或占位号码。备案信息变更属于静态源码变更，需重新执行 `pnpm test`、`pnpm build` 并发布新的 `dist/`。
 
 ## 6. 未来静态站点上传流程（仅说明，待单独授权）
 
@@ -69,3 +73,13 @@
 8. 记录发布时间、Git 提交、构建哈希、文件清单和回退位置。
 
 以上步骤仅是未来部署说明。本阶段不执行 SSH、上传、Nginx、SSL、云服务器或生产后端操作；本仓库不包含生产凭据或服务器配置。
+
+## 7. 动态公告接入（未来部署说明）
+
+公告不写入官网 HTML，也不需要每次发布公告都重新构建网站。管理员在后端 `/admin/` 的“网站公告”栏目发布、编辑或撤回；首页下一次加载会读取独立的 `GET /api/v1/public/website-announcements`。
+
+`config/site-config.json` 中的 `publicApiBaseUrl` 当前留空，表示使用同源 `/api/v1`；`publicWebsiteAnnouncementsPath` 为 `/public/website-announcements`。生产网关应只把官网的 `/api/v1/public/website-announcements` 精确转发到 `api.mychangliapp.cn` 的同一路径，并禁止把 `/api/v1/admin/` 暴露给官网静态资源。若改为官网直接请求 API 子域，必须在后端/网关设置精确的 `https://mychangliapp.cn` CORS allowlist，不能使用 `Access-Control-Allow-Origin: *`。
+
+部署后人工检查：公告存在时栏位位于导航与 Hero 之间；无公告或 API 失败时栏位完全隐藏；长正文在对话框内部滚动；确认已读只影响当前浏览器；管理员编辑后 `updatedAt` 变化会再次提示。公告接口异常不得阻塞 Hero、下载、导航或其他页面。
+
+详细响应字段、已读 key、文本安全规则和跨域边界见 [ANNOUNCEMENTS.md](ANNOUNCEMENTS.md)。本阶段没有连接生产 API、修改 Nginx 或写入生产数据库。
