@@ -32,18 +32,20 @@ for (const field of ['version', 'releaseDate', 'androidDownloadUrl', 'apkSize', 
   check(Object.hasOwn(config, field), `Config field missing: ${field}`);
 }
 
-check(config.version === '1.0.0', 'Configured version must remain 1.0.0');
-check(config.androidDownloadUrl === '/downloads/我的长理-V1.0.0.apk', 'Android download URL must match the V1.0.0 production APK');
-check(config.releaseDate === '2026-08-24', 'V1.0.0 release date is incorrect');
-check(config.apkSize === '5.76 MiB', 'V1.0.0 APK size is incorrect');
-check(config.apkSha256 === '66764E96822D302885340EF2222A660988B0A44921462698A4DA4590FF7DF96C', 'V1.0.0 APK SHA-256 is incorrect');
+check(config.version === '1.0.1', 'Configured version must be 1.0.1');
+check(config.androidDownloadUrl === '/downloads/我的长理-V1.0.1.apk', 'Android download URL must match the V1.0.1 production APK');
+check(config.releaseDate === '2026-08-25', 'V1.0.1 release date is incorrect');
+check(config.apkSize === '5.75 MiB', 'V1.0.1 APK size is incorrect');
+check(config.apkSha256 === '71009F88CB3FA04B0EF57E4DDDD05632578B5646A0D5EC8A984A4A62B5736190', 'V1.0.1 APK SHA-256 is incorrect');
 check(config.iosDownloadUrl === '', 'iOS URL must stay empty until a real release URL is supplied');
 check(config.filing.icpNumber === '湘ICP备2026035265号-1', 'ICP number does not match the provided filing record');
 check(config.filing.publicSecurityNumber === '', 'Public security number must stay empty until issued');
-check(config.releases.map((item) => item.version).join(',') === 'V1.0.0,V2.0.0,V3.0.0', 'Release order must stay newest first');
-check(config.releases[0].summary === '正式发布首个版本。', 'V1.0.0 release summary is incorrect');
-check(config.releases[0].items.join(',') === '校园学习服务,教务查询,校园生活查询,上课提醒,桌面小组件', 'V1.0.0 release items are incorrect');
-check(config.releases.slice(1).every((item) => item.status === '规划中' && item.summary === '' && item.items.length === 0), 'Planned releases must only show status and must not promise features');
+check(config.releases.map((item) => item.version).join(',') === 'V1.0.1,V1.0.0,V2.0.0,V3.0.0', 'Release order must stay newest first');
+check(config.releases[0].summary === '优化了一些使用细节，提升官网访问稳定性，没有新增功能。', 'V1.0.1 release summary is incorrect');
+check(config.releases[0].items.length === 0, 'V1.0.1 must not claim new features');
+check(config.releases[1].summary === '正式发布首个版本。', 'V1.0.0 release summary is incorrect');
+check(config.releases[1].items.join(',') === '校园学习服务,教务查询,校园生活查询,上课提醒,桌面小组件', 'V1.0.0 release items are incorrect');
+check(config.releases.slice(2).every((item) => item.status === '规划中' && item.summary === '' && item.items.length === 0), 'Planned releases must only show status and must not promise features');
 
 const getSupportUrlError = (supportUrl) => {
   if (typeof supportUrl !== 'string') return 'support URL must be a string';

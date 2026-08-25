@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
-  "displayVersion": "V1.0.0",
-  "releaseDate": "2026-08-24",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.0.apk",
-  "apkSize": "5.76 MiB",
-  "apkSha256": "66764E96822D302885340EF2222A660988B0A44921462698A4DA4590FF7DF96C",
+  "version": "1.0.1",
+  "displayVersion": "V1.0.1",
+  "releaseDate": "2026-08-25",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.1.apk",
+  "apkSize": "5.75 MiB",
+  "apkSha256": "71009F88CB3FA04B0EF57E4DDDD05632578B5646A0D5EC8A984A4A62B5736190",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -22,9 +22,16 @@
   },
   "releases": [
     {
-      "version": "V1.0.0",
+      "version": "V1.0.1",
       "status": "正式发布",
       "current": true,
+      "summary": "优化了一些使用细节，提升官网访问稳定性，没有新增功能。",
+      "items": []
+    },
+    {
+      "version": "V1.0.0",
+      "status": "正式发布",
+      "current": false,
       "summary": "正式发布首个版本。",
       "items": [
         "校园学习服务",
