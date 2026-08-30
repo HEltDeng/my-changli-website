@@ -8,15 +8,16 @@
 | --- | --- | ---: |
 | `assets/images/app-icon.png` | 顶部品牌、站点图标与下载卡片 | 18,846 B |
 | `assets/images/app-home.jpg` | 首页手机展示画面 | 310,440 B |
+| `assets/images/community/qq-group.jpg` | QQ 交流群二维码 | 138,451 B |
 | `assets/images/support/alipay.png` | 支付宝支持二维码，默认不展示 | 224,870 B |
 | `assets/images/support/wechat.png` | 微信支持二维码，默认不展示 | 154,011 B |
 | `assets/docs/MyChangli-V1.0.0-User-Manual.pdf` | V1.0.0 软件使用说明书 | 1,757,336 B |
 
-首页画面使用开发者本轮提供的 1200 × 2664 原始截图，未进行缩放重编码；支持二维码沿用开发者已放入仓库的本地图片。未生成或伪造 APP 截图、安装包与支付信息。
+首页画面使用开发者本轮提供的 1200 × 2664 原始截图，QQ 群二维码使用开发者确认的群聊分享图片，均未进行缩放重编码；支持二维码沿用开发者已放入仓库的本地图片。未生成或伪造 APP 截图、安装包与支付信息。
 
 ## 线性图标
 
-`assets/icons/` 当前包含 17 个 SVG：
+`assets/icons/` 当前包含 24 个 SVG：
 
 - `badge-info.svg`
 - `bell-ring.svg`
@@ -35,16 +36,23 @@
 - `shield-alert.svg`
 - `smartphone.svg`
 - `zap.svg`
+- `book-open.svg`
+- `github.svg`
+- `handshake.svg`
+- `heart-handshake.svg`
+- `moon.svg`
+- `qq.svg`
+- `sun.svg`
 
-图标来自 Lucide，许可边界见 `THIRD_PARTY_NOTICES.md`。
+通用线性图标来自 Lucide；QQ 与 GitHub 文件仅用于平台链接识别。许可和品牌边界见 `THIRD_PARTY_NOTICES.md`。
 
 ## 页面运行资源
 
 | 路径 | 用途 | 源文件大小 |
 | --- | --- | ---: |
-| `assets/styles/site.css` | 全站视觉、响应式布局与交互状态 | 24,022 B |
-| `assets/scripts/site.js` | 导航、配置、下载状态、锚点、时间线与支持页交互 | 9,542 B |
-| `config/site-config.json` | 版本、下载、邮箱、备案与更新日志配置 | 配置文件 |
+| `assets/styles/site.css` | 全站视觉、响应式布局与交互状态 | 源码文件 |
+| `assets/scripts/site.js` | 导航、主题、社区入口、公告、下载状态、锚点、时间线与支持页交互 | 源码文件 |
+| `config/site-config.json` | 版本、下载、邮箱、备案、更新日志与 QQ/GitHub 配置 | 配置文件 |
 | `config/support-config.json` | 支付宝/微信支持链接与二维码兜底配置 | 配置文件 |
 
 网站不加载第三方字体、远程脚本、统计 SDK 或外部样式表。开源项目按钮只在用户点击后跳转到 GitHub，不作为页面运行依赖。

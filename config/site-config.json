@@ -9,6 +9,15 @@
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
   "publicWebsiteAnnouncementsPath": "/public/website-announcements",
+  "community": {
+    "qqEnabled": true,
+    "qqPersonalNumber": "",
+    "qqPersonalUrl": "",
+    "qqGroupNumber": "1107212537",
+    "qqGroupUrl": "https://qun.qq.com/universal-share/share?ac=1&authKey=ZuW9e%2BGM%2FVfToaX%2B4JriTfiJpPk7tq8%2FLdRFotJxu0rnfnn%2FO8%2FLFLJE8b3Be0fm&busi_data=eyJncm91cENvZGUiOiIxMTA3MjEyNTM3IiwidG9rZW4iOiJOK1JMdjlpdWIwQjhVME9BdkIrem5xNExHeVFsOGdSaDh4R3lLRmJkMktuMW9idHNpeFJTQm5EbUFSRi8rODgyIiwidWluIjoiMjEyODQzMDczNCJ9&data=rsII6-5vEN5k7YeK9S-GRm95JrOP2pu0v77qw9KU4kMLm0OK0l1BSEvOAoczaSIsBj2LekE3oQ_Pm4kz3VpUKA&svctype=4&tempid=h5_group_info",
+    "qqGroupQrImage": "/assets/images/community/qq-group.jpg",
+    "githubUrl": ""
+  },
   "contact": {
     "localPart": "2941977651",
     "domain": "proton.me"

@@ -11,6 +11,8 @@ const htmlFiles = [
   'contact.html',
   'thanks.html',
   'support.html',
+  'guides.html',
+  'commercial.html',
   'privacy.html',
   'terms.html',
   'manual.html',
@@ -30,6 +32,38 @@ const supportConfig = JSON.parse(readFileSync(supportConfigPath, 'utf8'));
 
 for (const field of ['version', 'releaseDate', 'androidDownloadUrl', 'apkSize', 'apkSha256', 'iosStatus', 'iosDownloadUrl', 'publicApiBaseUrl', 'publicWebsiteAnnouncementsPath']) {
   check(Object.hasOwn(config, field), `Config field missing: ${field}`);
+}
+
+check(config.community && typeof config.community === 'object', 'Config community object is missing');
+if (config.community && typeof config.community === 'object') {
+  for (const field of ['qqEnabled', 'qqPersonalNumber', 'qqPersonalUrl', 'qqGroupNumber', 'qqGroupUrl', 'qqGroupQrImage', 'githubUrl']) {
+    check(Object.hasOwn(config.community, field), `Community config field missing: ${field}`);
+  }
+  check(typeof config.community.qqEnabled === 'boolean', 'community.qqEnabled must be boolean');
+  for (const field of ['qqPersonalNumber', 'qqPersonalUrl', 'qqGroupNumber', 'qqGroupUrl', 'qqGroupQrImage', 'githubUrl']) {
+    check(typeof config.community[field] === 'string', `Community config field must be a string: ${field}`);
+    if (typeof config.community[field] === 'string') {
+      check(config.community[field] === config.community[field].trim(), `${field}: community value must not contain surrounding whitespace`);
+    }
+  }
+  for (const field of ['qqPersonalUrl', 'qqGroupUrl', 'githubUrl']) {
+    const value = config.community[field];
+    if (!value) continue;
+    try {
+      const parsed = new URL(value);
+      check(parsed.protocol === 'https:' && Boolean(parsed.hostname), `${field}: community URL must be an absolute HTTPS URL`);
+    } catch {
+      check(false, `${field}: community URL is invalid`);
+    }
+  }
+  const qrImage = config.community.qqGroupQrImage;
+  if (qrImage) {
+    check(/^\/assets\/(?:images|icons)\/[a-z0-9][a-z0-9._/-]*$/i.test(qrImage), 'qqGroupQrImage must use a local /assets/ path');
+    check(existsSync(resolve(root, qrImage.slice(1))), 'qqGroupQrImage: configured QR image is missing');
+  }
+  check(config.community.qqGroupNumber === '1107212537', 'Configured QQ group number is incorrect');
+  check(config.community.qqGroupUrl.startsWith('https://qun.qq.com/universal-share/share?'), 'Configured QQ group link must use the supplied QQ universal-share URL');
+  check(config.community.qqGroupQrImage === '/assets/images/community/qq-group.jpg', 'Configured QQ group QR image is incorrect');
 }
 
 check(config.version === '1.0.1', 'Configured version must be 1.0.1');
@@ -111,7 +145,6 @@ for (const file of htmlFiles) {
   check(html.includes('<html lang="zh-CN">'), `${file}: missing zh-CN language`);
   check(html.includes('name="viewport"'), `${file}: missing viewport metadata`);
   check(html.includes('data-menu-button'), `${file}: missing accessible mobile menu`);
-  check(html.includes('data-nav-page="thanks"'), `${file}: missing thanks navigation entry`);
   check(html.includes('data-filing'), `${file}: filing block is missing`);
   check(html.includes('湘ICP备2026035265号-1'), `${file}: provided ICP number is missing from the static footer`);
   check(html.includes('href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer"'), `${file}: ICP link attributes are incomplete`);
@@ -143,6 +176,11 @@ for (const feature of requiredFeatures) {
 
 const siteCss = readFileSync(resolve(root, 'assets/styles/site.css'), 'utf8');
 const siteScript = readFileSync(resolve(root, 'assets/scripts/site.js'), 'utf8');
+check(siteScript.includes("{ page: 'guides', href: 'guides.html'"), 'site.js: primary navigation must include the guide entry');
+check(siteScript.includes('setupCommunityActions'), 'site.js: community shortcuts are not wired');
+check(siteScript.includes('setupFooterEntries'), 'site.js: footer shortcut entries are not wired');
+check(siteScript.includes('setupGuides'), 'site.js: guide search is not wired');
+check(!siteScript.toLowerCase().includes('telegram'), 'site.js: Telegram contact must not be included');
 check(/\.menu-button\s*\{[^}]*min-inline-size:\s*48px;[^}]*min-block-size:\s*48px;/s.test(siteCss), 'site.css: mobile menu button touch target must be at least 48px');
 check(/\.site-nav\[data-open="true"\]\s*\{[^}]*display:\s*flex;[^}]*flex-direction:\s*column;/s.test(siteCss), 'site.css: expanded mobile navigation must use a vertical flex layout');
 check(/\.site-nav a\s*\{[^}]*min-height:\s*48px;/s.test(siteCss), 'site.css: mobile navigation rows must retain a 48px touch target');
@@ -202,6 +240,17 @@ check(!/data-support-image="(?:alipay|wechat)"[^>]+src=/i.test(supportHtml), 'su
 
 const updatesHtml = readFileSync(resolve(root, 'updates.html'), 'utf8');
 check(!updatesHtml.includes('未来规划只记录状态，不提前承诺具体功能'), 'updates.html: old release wording remains');
+
+const guidesHtml = readFileSync(resolve(root, 'guides.html'), 'utf8');
+check(guidesHtml.includes('data-guide-search'), 'guides.html: search input is missing');
+check(guidesHtml.includes('data-guide-link'), 'guides.html: guide navigation is missing');
+check(guidesHtml.includes('data-guide-article'), 'guides.html: guide articles are missing');
+check(guidesHtml.includes('快速入门'), 'guides.html: quickstart copy is missing');
+
+const commercialHtml = readFileSync(resolve(root, 'commercial.html'), 'utf8');
+check(commercialHtml.includes('商业合作'), 'commercial.html: cooperation heading is missing');
+check(commercialHtml.includes('data-mail-kind="contact"'), 'commercial.html: direct email entry is missing');
+check(commercialHtml.includes('邮件中请提供'), 'commercial.html: requested materials section is missing');
 
 const imageLimits = [
   ['assets/images/app-icon.png', 50 * 1024],

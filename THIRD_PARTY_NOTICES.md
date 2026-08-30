@@ -17,3 +17,10 @@ Copyright (c) 2026 Lucide Icons and Contributors.
 Licensed under the ISC License. Some icons are derived from Feather Icons and
 retain the Feather MIT License notice. The full license text is available from
 the Lucide project at <https://lucide.dev/license>.
+
+## QQ and GitHub marks
+
+The QQ and GitHub shortcut marks in `assets/icons/qq.svg` and
+`assets/icons/github.svg` are used only to identify links to those platforms.
+They are not the “PriceAI” logo or any PriceAI brand asset. The site keeps its
+own 我的长理 name, icon, copy and blue/white visual system.

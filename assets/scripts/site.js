@@ -10,28 +10,91 @@ const setText = (selector, value) => {
   });
 };
 
+const PRIMARY_NAV_ITEMS = [
+  { page: 'home', href: 'index.html', label: '首页' },
+  { page: 'features', href: 'features.html', label: '功能介绍' },
+  { page: 'download', href: 'download.html', label: '下载' },
+  { page: 'updates', href: 'updates.html', label: '更新日志' },
+  { page: 'guides', href: 'guides.html', label: '指南' },
+];
+
+const createIconImage = (name, alt = '') => {
+  const image = document.createElement('img');
+  image.src = `/assets/icons/${name}.svg`;
+  image.alt = alt;
+  image.width = 20;
+  image.height = 20;
+  image.setAttribute('aria-hidden', alt ? 'false' : 'true');
+  return image;
+};
+
 const setupNavigation = () => {
   const button = document.querySelector('[data-menu-button]');
   const menu = document.querySelector('[data-site-nav]');
-  if (!button || !menu) return;
+  const header = document.querySelector('.site-header');
+  if (!button || !menu || !header) return;
+
+  menu.replaceChildren();
+  PRIMARY_NAV_ITEMS.forEach((item) => {
+    const link = document.createElement('a');
+    link.href = item.href;
+    link.dataset.navPage = item.page;
+    link.textContent = item.label;
+    menu.append(link);
+  });
+
+  const drawerHead = document.createElement('div');
+  drawerHead.className = 'mobile-nav-head';
+  drawerHead.innerHTML = '<strong>导航</strong>';
+  const drawerClose = document.createElement('button');
+  drawerClose.type = 'button';
+  drawerClose.className = 'mobile-nav-close';
+  drawerClose.setAttribute('aria-label', '关闭导航菜单');
+  drawerClose.textContent = '×';
+  drawerHead.append(drawerClose);
+  menu.prepend(drawerHead);
+
+  const overlay = document.createElement('button');
+  overlay.type = 'button';
+  overlay.className = 'nav-overlay';
+  overlay.setAttribute('aria-label', '关闭导航菜单');
+  overlay.hidden = true;
+  header.append(overlay);
 
   const closeMenu = () => {
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-label', '打开导航菜单');
     menu.dataset.open = 'false';
+    overlay.hidden = true;
+    document.body.classList.remove('nav-is-open');
+  };
+
+  const openMenu = () => {
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('aria-label', '关闭导航菜单');
+    menu.dataset.open = 'true';
+    overlay.hidden = false;
+    document.body.classList.add('nav-is-open');
+    window.requestAnimationFrame(() => drawerClose.focus());
   };
 
   button.addEventListener('click', () => {
-    const isOpen = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', String(!isOpen));
-    button.setAttribute('aria-label', isOpen ? '打开导航菜单' : '关闭导航菜单');
-    menu.dataset.open = String(!isOpen);
+    if (button.getAttribute('aria-expanded') === 'true') closeMenu();
+    else openMenu();
   });
-
+  drawerClose.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
   menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeMenu();
   });
+
+  const mobileActions = document.createElement('div');
+  mobileActions.className = 'mobile-nav-actions';
+  mobileActions.setAttribute('aria-label', '快捷入口');
+  const headerActions = header.querySelector('[data-header-actions]');
+  if (headerActions) mobileActions.append(headerActions.cloneNode(true));
+  menu.append(mobileActions);
 };
 
 const setupCurrentPage = () => {
@@ -39,6 +102,219 @@ const setupCurrentPage = () => {
   document.querySelectorAll('[data-nav-page]').forEach((link) => {
     if (link.dataset.navPage === page) link.setAttribute('aria-current', 'page');
   });
+};
+
+const setupHeaderActions = () => {
+  const headerInner = document.querySelector('.header-inner');
+  if (!headerInner || headerInner.querySelector('[data-header-actions]')) return;
+
+  const actions = document.createElement('div');
+  actions.className = 'header-actions';
+  actions.dataset.headerActions = 'true';
+  actions.setAttribute('aria-label', '快捷入口');
+
+  const themeButton = document.createElement('button');
+  themeButton.type = 'button';
+  themeButton.className = 'header-action';
+  themeButton.dataset.themeToggle = 'true';
+  themeButton.setAttribute('aria-label', '切换到深色模式');
+  themeButton.title = '切换到深色模式';
+  const themeIcon = createIconImage('moon');
+  themeIcon.dataset.themeIcon = 'true';
+  themeButton.append(themeIcon, Object.assign(document.createElement('span'), {
+    className: 'header-action-label',
+    textContent: '明暗',
+  }));
+  actions.append(themeButton);
+
+  const mailLink = document.createElement('a');
+  mailLink.className = 'header-action';
+  mailLink.dataset.mailKind = 'contact';
+  mailLink.setAttribute('aria-label', '直接联系邮箱');
+  mailLink.title = '直接联系邮箱';
+  mailLink.append(createIconImage('mail'), Object.assign(document.createElement('span'), {
+    className: 'header-action-label',
+    textContent: '联系',
+  }));
+  actions.append(mailLink);
+
+  const announcementButton = document.createElement('button');
+  announcementButton.type = 'button';
+  announcementButton.className = 'header-action announcement-shortcut';
+  announcementButton.dataset.announcementShortcut = 'true';
+  announcementButton.disabled = true;
+  announcementButton.setAttribute('aria-label', '暂无最新公告');
+  announcementButton.title = '暂无最新公告';
+  announcementButton.append(createIconImage('bell-ring'), Object.assign(document.createElement('span'), {
+    className: 'header-action-label',
+    textContent: '公告',
+  }));
+  const announcementDot = document.createElement('span');
+  announcementDot.className = 'announcement-dot';
+  announcementDot.hidden = true;
+  announcementDot.setAttribute('aria-hidden', 'true');
+  announcementButton.append(announcementDot);
+  actions.append(announcementButton);
+
+  const qqButton = document.createElement('button');
+  qqButton.type = 'button';
+  qqButton.className = 'header-action';
+  qqButton.dataset.qqTrigger = 'true';
+  qqButton.setAttribute('aria-label', '打开 QQ 联系方式');
+  qqButton.title = 'QQ 联系方式待配置';
+  qqButton.append(createIconImage('qq'), Object.assign(document.createElement('span'), {
+    className: 'header-action-label',
+    textContent: 'QQ',
+  }));
+  actions.append(qqButton);
+
+  const githubLink = document.createElement('a');
+  githubLink.className = 'header-action';
+  githubLink.dataset.githubLink = 'true';
+  githubLink.setAttribute('aria-label', '打开我的长理 GitHub');
+  githubLink.title = 'GitHub 地址待配置';
+  githubLink.setAttribute('aria-disabled', 'true');
+  githubLink.tabIndex = -1;
+  githubLink.append(createIconImage('github'), Object.assign(document.createElement('span'), {
+    className: 'header-action-label',
+    textContent: 'GitHub',
+  }));
+  actions.append(githubLink);
+
+  headerInner.append(actions);
+};
+
+const setupThemeToggle = () => {
+  const toggles = Array.from(document.querySelectorAll('[data-theme-toggle]'));
+  if (!toggles.length) return;
+
+  const readTheme = () => {
+    try {
+      const saved = window.localStorage.getItem('mychangli:theme');
+      return saved === 'dark' || saved === 'light' ? saved : 'light';
+    } catch {
+      return 'light';
+    }
+  };
+  const writeTheme = (theme) => {
+    try {
+      window.localStorage.setItem('mychangli:theme', theme);
+    } catch {
+      // A storage-disabled browser can still use the current theme.
+    }
+  };
+  const applyTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0e1b2b' : '#ffffff');
+    toggles.forEach((toggle) => {
+      const dark = theme === 'dark';
+      toggle.setAttribute('aria-label', dark ? '切换到浅色模式' : '切换到深色模式');
+      toggle.title = dark ? '切换到浅色模式' : '切换到深色模式';
+      const icon = toggle.querySelector('[data-theme-icon]');
+      if (icon) icon.src = `/assets/icons/${dark ? 'sun' : 'moon'}.svg`;
+      const label = toggle.querySelector('.header-action-label');
+      if (label) label.textContent = dark ? '浅色' : '明暗';
+    });
+  };
+
+  applyTheme(readTheme());
+  toggles.forEach((toggle) => {
+    if (toggle.dataset.themeBound) return;
+    toggle.dataset.themeBound = 'true';
+    toggle.addEventListener('click', () => {
+      const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      writeTheme(nextTheme);
+      applyTheme(nextTheme);
+    });
+  });
+};
+
+const setupFooterEntries = () => {
+  const homeStatement = document.querySelector('body[data-page="home"] .statement');
+  document.querySelectorAll('.site-footer').forEach((footer) => {
+    if (document.querySelector('[data-footer-entry-grid]')) return;
+    const filing = footer.querySelector('.footer-filing');
+    if (!filing) return;
+
+    const entries = [
+      { href: 'guides.html', label: '入门指南', icon: 'book-open', note: '常用功能与操作说明' },
+      { href: 'commercial.html', label: '商业合作', icon: 'handshake', note: '提交合作意向与材料' },
+      { href: 'thanks.html', label: '支持作者', icon: 'heart-handshake', note: '感谢、开源与自愿支持' },
+    ];
+    const grid = document.createElement('nav');
+    grid.className = homeStatement
+      ? 'footer-entry-grid homepage-entry-grid'
+      : 'container footer-entry-grid';
+    grid.dataset.footerEntryGrid = 'true';
+    grid.setAttribute('aria-label', '站点快捷入口');
+
+    entries.forEach((entry) => {
+      const link = document.createElement('a');
+      link.className = 'footer-entry';
+      link.href = entry.href;
+      const icon = document.createElement('span');
+      icon.className = 'footer-entry-icon';
+      icon.append(createIconImage(entry.icon));
+      const copy = document.createElement('span');
+      copy.className = 'footer-entry-copy';
+      const label = document.createElement('strong');
+      label.textContent = entry.label;
+      const note = document.createElement('small');
+      note.textContent = entry.note;
+      copy.append(label, note);
+      link.append(icon, copy);
+      grid.append(link);
+    });
+    if (homeStatement) {
+      homeStatement.after(grid);
+    } else {
+      filing.before(grid);
+    }
+  });
+};
+
+const ensureAnnouncementShell = () => {
+  if (document.querySelector('[data-announcement-region]')) return;
+  const main = document.querySelector('main');
+  if (!main) return;
+
+  const region = document.createElement('div');
+  region.className = 'container announcement-region';
+  region.dataset.announcementRegion = 'true';
+  region.hidden = true;
+  region.innerHTML = `
+    <button class="announcement-bar" type="button" data-announcement-trigger aria-controls="announcement-dialog" aria-haspopup="dialog">
+      <img class="announcement-icon" src="/assets/icons/bell-ring.svg" alt="">
+      <span class="announcement-label">最新公告</span>
+      <span class="announcement-separator" aria-hidden="true">·</span>
+      <span class="announcement-summary" data-announcement-summary></span>
+      <span class="announcement-action">查看详情 <span aria-hidden="true">›</span></span>
+    </button>`;
+  const dialog = document.createElement('dialog');
+  dialog.className = 'announcement-dialog';
+  dialog.id = 'announcement-dialog';
+  dialog.dataset.announcementDialog = 'true';
+  dialog.setAttribute('aria-modal', 'true');
+  dialog.setAttribute('aria-labelledby', 'announcement-dialog-title');
+  dialog.setAttribute('aria-describedby', 'announcement-dialog-content');
+  dialog.innerHTML = `
+    <div class="announcement-dialog-shell">
+      <header class="announcement-dialog-header">
+        <div class="announcement-dialog-heading">
+          <p class="section-kicker">最新公告</p>
+          <h2 id="announcement-dialog-title" data-announcement-dialog-title></h2>
+          <time class="announcement-dialog-date" data-announcement-date></time>
+        </div>
+        <button class="announcement-close" type="button" data-announcement-close aria-label="关闭公告">×</button>
+      </header>
+      <div class="announcement-dialog-body" id="announcement-dialog-content" data-announcement-content tabindex="0"></div>
+      <footer class="announcement-dialog-footer">
+        <button class="button button-primary" type="button" data-announcement-confirm>确认已读</button>
+      </footer>
+    </div>`;
+  main.before(region);
+  region.after(dialog);
 };
 
 const setupFeatureAnchor = () => {
@@ -158,6 +434,8 @@ const setupAnnouncements = (config) => {
   const trigger = document.querySelector('[data-announcement-trigger]');
   if (!region || !dialog || !trigger || typeof dialog.showModal !== 'function') return;
 
+  const shortcuts = Array.from(document.querySelectorAll('[data-announcement-shortcut]'));
+
   const summary = region.querySelector('[data-announcement-summary]');
   const dialogTitle = dialog.querySelector('[data-announcement-dialog-title]');
   const dialogDate = dialog.querySelector('[data-announcement-date]');
@@ -169,6 +447,17 @@ const setupAnnouncements = (config) => {
   let latestAnnouncement = null;
   let lastLoadedAt = 0;
   let previouslyFocused = trigger;
+
+  const setShortcutState = (available, announcement = latestAnnouncement) => {
+    shortcuts.forEach((shortcut) => {
+      shortcut.disabled = !available;
+      shortcut.setAttribute('aria-disabled', String(!available));
+      shortcut.setAttribute('aria-label', available ? '打开最新公告' : '暂无最新公告');
+      shortcut.title = available ? '打开最新公告' : '暂无最新公告';
+      const dot = shortcut.querySelector('.announcement-dot');
+      if (dot) dot.hidden = !available || !announcement || isAnnouncementRead(announcement);
+    });
+  };
 
   const focusableElements = () => Array.from(dialog.querySelectorAll(
     'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
@@ -222,11 +511,13 @@ const setupAnnouncements = (config) => {
     latestAnnouncement = announcement;
     summary.textContent = announcement.title;
     region.hidden = false;
+    setShortcutState(true, announcement);
   };
 
   const hideAnnouncement = () => {
     latestAnnouncement = null;
     region.hidden = true;
+    setShortcutState(false);
     if (dialog.open) closeDialog();
   };
 
@@ -260,9 +551,15 @@ const setupAnnouncements = (config) => {
   };
 
   trigger.addEventListener('click', () => openDialog(latestAnnouncement));
+  shortcuts.forEach((shortcut) => {
+    shortcut.addEventListener('click', () => openDialog(latestAnnouncement));
+  });
   closeButton.addEventListener('click', closeDialog);
   confirmButton.addEventListener('click', () => {
-    if (latestAnnouncement) markAnnouncementRead(latestAnnouncement);
+    if (latestAnnouncement) {
+      markAnnouncementRead(latestAnnouncement);
+      setShortcutState(true, latestAnnouncement);
+    }
     closeDialog();
   });
   dialog.addEventListener('keydown', handleDialogKeydown);
@@ -275,6 +572,302 @@ const setupAnnouncements = (config) => {
   });
 
   loadAnnouncements();
+};
+
+const setupCommunityActions = (config = {}) => {
+  const community = config && typeof config.community === 'object' ? config.community : {};
+  const trimValue = (value) => (typeof value === 'string' ? value.trim() : '');
+  const asHttpsUrl = (value) => {
+    const source = trimValue(value);
+    if (!source) return '';
+    try {
+      const parsed = new URL(source);
+      return parsed.protocol === 'https:' && parsed.hostname ? parsed.href : '';
+    } catch {
+      return '';
+    }
+  };
+  const asLocalImage = (value) => {
+    const source = trimValue(value);
+    return /^\/assets\/(?:images|icons)\/[a-z0-9][a-z0-9._/-]*$/i.test(source)
+      ? source
+      : '';
+  };
+
+  const githubUrl = asHttpsUrl(community.githubUrl);
+  const qqEnabled = community.qqEnabled === true;
+  const qqPersonalNumber = qqEnabled ? trimValue(community.qqPersonalNumber) : '';
+  const qqPersonalUrl = qqEnabled ? asHttpsUrl(community.qqPersonalUrl) : '';
+  const qqGroupUrl = qqEnabled ? asHttpsUrl(community.qqGroupUrl) : '';
+  const qqGroupNumber = qqEnabled ? trimValue(community.qqGroupNumber) : '';
+  const qqGroupQrImage = qqEnabled ? asLocalImage(community.qqGroupQrImage) : '';
+  const hasQqContact = Boolean(qqPersonalNumber || qqPersonalUrl || qqGroupUrl || qqGroupNumber || qqGroupQrImage);
+
+  document.querySelectorAll('[data-github-link]').forEach((link) => {
+    if (githubUrl) {
+      link.hidden = false;
+      link.href = githubUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.removeAttribute('aria-disabled');
+      link.removeAttribute('tabindex');
+      link.classList.add('is-available');
+      link.title = '打开我的长理 GitHub';
+    } else {
+      link.hidden = true;
+      link.removeAttribute('href');
+      link.removeAttribute('target');
+      link.removeAttribute('rel');
+      link.setAttribute('aria-disabled', 'true');
+      link.tabIndex = -1;
+      link.classList.remove('is-available');
+      link.removeAttribute('title');
+    }
+  });
+
+  let dialog = document.querySelector('[data-qq-dialog]');
+  if (!dialog) {
+    dialog = document.createElement('dialog');
+    dialog.className = 'qq-dialog';
+    dialog.dataset.qqDialog = 'true';
+    dialog.setAttribute('aria-modal', 'true');
+    dialog.setAttribute('aria-labelledby', 'qq-dialog-title');
+    dialog.setAttribute('aria-describedby', 'qq-dialog-intro');
+    dialog.innerHTML = `
+      <div class="qq-dialog-shell">
+        <header class="qq-dialog-header">
+          <div class="qq-dialog-heading">
+            <span class="qq-dialog-brand" aria-hidden="true">${createIconImage('qq').outerHTML}</span>
+            <div>
+              <h2 id="qq-dialog-title">加入“我的长理”QQ 交流群</h2>
+              <p class="qq-dialog-intro" id="qq-dialog-intro" data-qq-intro></p>
+            </div>
+          </div>
+          <button class="announcement-close" type="button" data-qq-close aria-label="关闭 QQ 联系方式">×</button>
+        </header>
+        <div class="qq-dialog-body" data-qq-body></div>
+      </div>`;
+    document.body.append(dialog);
+  }
+
+  const intro = dialog.querySelector('[data-qq-intro]');
+  const body = dialog.querySelector('[data-qq-body]');
+  const closeButtons = Array.from(dialog.querySelectorAll('[data-qq-close]'));
+  if (!intro || !body || !closeButtons.length || typeof dialog.showModal !== 'function') return;
+
+  const renderQqDialog = () => {
+    body.replaceChildren();
+    intro.textContent = hasQqContact
+      ? '交流使用体验、反馈问题，或获取“我的长理”的最新消息。'
+      : 'QQ 联系入口已经预留，公开的 QQ 号、群链接或二维码将在配置完成后显示。';
+
+    if (!hasQqContact) {
+      const empty = document.createElement('p');
+      empty.className = 'qq-empty';
+      empty.textContent = 'QQ 联系方式待配置';
+      body.append(empty);
+      return;
+    }
+
+    const personalPanel = document.createElement('div');
+    personalPanel.className = 'qq-personal-panel';
+    if (qqPersonalUrl) {
+      const personal = document.createElement('a');
+      personal.className = 'button button-secondary qq-personal-link';
+      personal.href = qqPersonalUrl;
+      personal.target = '_blank';
+      personal.rel = 'noopener noreferrer';
+      personal.textContent = '打开个人 QQ 联系';
+      personalPanel.append(personal);
+    }
+
+    if (qqPersonalNumber) {
+      const row = document.createElement('div');
+      row.className = 'qq-copy-row';
+      const label = document.createElement('span');
+      label.textContent = '个人 QQ 号';
+      const number = document.createElement('strong');
+      number.textContent = qqPersonalNumber;
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'button button-secondary qq-copy-button';
+      copy.dataset.qqCopy = qqPersonalNumber;
+      copy.textContent = '复制';
+      row.append(label, number, copy);
+      personalPanel.append(row);
+    }
+
+    if (personalPanel.childElementCount) body.append(personalPanel);
+
+    const groupLayout = document.createElement('div');
+    groupLayout.className = 'qq-group-layout';
+    const groupDetails = document.createElement('section');
+    groupDetails.className = 'qq-group-details';
+
+    if (qqGroupNumber) {
+      const row = document.createElement('div');
+      row.className = 'qq-copy-row';
+      const label = document.createElement('span');
+      label.textContent = 'QQ群号';
+      const number = document.createElement('strong');
+      number.textContent = qqGroupNumber;
+      const copy = document.createElement('button');
+      copy.type = 'button';
+      copy.className = 'button button-secondary qq-copy-button';
+      copy.dataset.qqCopy = qqGroupNumber;
+      copy.textContent = '复制';
+      row.append(label, number, copy);
+      groupDetails.append(row);
+    }
+
+    const helper = document.createElement('p');
+    helper.className = 'qq-group-helper';
+    helper.textContent = '手机用户可以直接点击按钮打开 QQ；桌面用户可以复制群号，或使用手机 QQ 扫描右侧二维码。';
+    groupDetails.append(helper);
+
+    if (qqGroupUrl) {
+      const group = document.createElement('a');
+      group.className = 'button button-primary qq-group-link';
+      group.href = qqGroupUrl;
+      group.target = '_blank';
+      group.rel = 'noopener noreferrer';
+      group.append('打开 QQ 加群链接', Object.assign(document.createElement('span'), {
+        className: 'qq-external-mark',
+        textContent: '↗',
+      }));
+      groupDetails.append(group);
+    }
+
+    groupLayout.append(groupDetails);
+
+    if (qqGroupQrImage) {
+      const figure = document.createElement('figure');
+      figure.className = 'qq-qr-frame';
+      const image = document.createElement('img');
+      image.src = qqGroupQrImage;
+      image.alt = '我的长理 QQ 交流群二维码';
+      image.loading = 'lazy';
+      figure.append(image);
+      const caption = document.createElement('figcaption');
+      caption.textContent = '使用手机 QQ 扫一扫加入群聊';
+      figure.append(caption);
+      groupLayout.append(figure);
+    }
+
+    body.append(groupLayout);
+
+    body.querySelectorAll('[data-qq-copy]').forEach((copyButton) => {
+      copyButton.addEventListener('click', async () => {
+        const number = copyButton.dataset.qqCopy || '';
+        let copied = false;
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(number);
+            copied = true;
+          }
+        } catch {
+          copied = false;
+        }
+        if (!copied) {
+          const text = document.createElement('textarea');
+          text.value = number;
+          text.setAttribute('readonly', '');
+          text.style.position = 'fixed';
+          text.style.opacity = '0';
+          document.body.append(text);
+          text.select();
+          try { copied = document.execCommand('copy'); } catch { copied = false; }
+          text.remove();
+        }
+        copyButton.textContent = copied ? '已复制' : '请手动复制';
+        window.setTimeout(() => { copyButton.textContent = '复制'; }, 1800);
+      });
+    });
+  };
+
+  renderQqDialog();
+  document.querySelectorAll('[data-qq-trigger]').forEach((trigger) => {
+    trigger.disabled = false;
+    trigger.removeAttribute('aria-disabled');
+    trigger.title = hasQqContact ? '打开 QQ 联系方式' : 'QQ 联系方式待配置';
+    if (trigger.dataset.qqBound) return;
+    trigger.dataset.qqBound = 'true';
+    trigger.addEventListener('click', () => {
+      const menuButton = document.querySelector('[data-menu-button]');
+      const menuWasOpen = menuButton?.getAttribute('aria-expanded') === 'true';
+      previouslyFocused = menuWasOpen ? menuButton : trigger;
+      const openDialog = () => {
+        if (!dialog.open) dialog.showModal();
+        window.requestAnimationFrame(() => dialog.querySelector('[data-qq-close]')?.focus());
+      };
+      if (menuWasOpen) {
+        menuButton.click();
+        window.setTimeout(openDialog, 220);
+      } else {
+        openDialog();
+      }
+    });
+  });
+
+  let previouslyFocused = null;
+  const closeDialog = () => {
+    if (dialog.open) dialog.close();
+    if (previouslyFocused && previouslyFocused.isConnected) previouslyFocused.focus();
+  };
+  closeButtons.forEach((button) => {
+    if (button.dataset.qqCloseBound) return;
+    button.dataset.qqCloseBound = 'true';
+    button.addEventListener('click', closeDialog);
+  });
+  if (!dialog.dataset.qqDialogBound) {
+    dialog.dataset.qqDialogBound = 'true';
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      closeDialog();
+    });
+    dialog.addEventListener('close', closeDialog);
+  }
+  document.querySelectorAll('[data-qq-trigger]').forEach((trigger) => {
+    if (trigger.dataset.qqFocusBound) return;
+    trigger.dataset.qqFocusBound = 'true';
+    trigger.addEventListener('pointerdown', () => { previouslyFocused = trigger; });
+    trigger.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') previouslyFocused = trigger;
+    });
+  });
+};
+
+const setupGuides = () => {
+  const search = document.querySelector('[data-guide-search]');
+  const links = Array.from(document.querySelectorAll('[data-guide-link]'));
+  const articles = Array.from(document.querySelectorAll('[data-guide-article]'));
+  const empty = document.querySelector('[data-guide-empty]');
+  if (!search || !articles.length) return;
+
+  const filterGuides = () => {
+    const query = String(search.value || '').trim().toLocaleLowerCase('zh-CN');
+    let visible = 0;
+    articles.forEach((article) => {
+      const matches = !query || article.textContent.toLocaleLowerCase('zh-CN').includes(query);
+      article.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    links.forEach((link) => {
+      const article = document.querySelector(link.hash);
+      const active = article && !article.hidden;
+      link.hidden = Boolean(query) && !active;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  };
+
+  search.addEventListener('input', filterGuides);
+  links.forEach((link) => {
+    link.addEventListener('click', () => {
+      links.forEach((item) => item.removeAttribute('aria-current'));
+      link.setAttribute('aria-current', 'location');
+    });
+  });
+  filterGuides();
 };
 
 const setupMailLinks = (config) => {
@@ -524,6 +1117,7 @@ const applyConfig = (config) => {
   setText('[data-app-version]', config.displayVersion);
   setText('[data-footer-version]', config.displayVersion);
   setupMailLinks(config);
+  setupCommunityActions(config);
   setupFiling(config);
   setupDownload(config);
   setupIos(config);
@@ -543,8 +1137,14 @@ const loadConfig = async () => {
   }
 };
 
+setupHeaderActions();
 setupNavigation();
 setupCurrentPage();
 setupFeatureAnchor();
+setupThemeToggle();
+setupFooterEntries();
+ensureAnnouncementShell();
+setupGuides();
+setupCommunityActions();
 setupSupport();
 loadConfig();

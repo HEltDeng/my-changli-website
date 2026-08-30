@@ -24,6 +24,14 @@ const copyRuntimeFiles = () => ({
     if (existsSync(supportImages)) {
       cpSync(supportImages, resolve(import.meta.dirname, 'dist/assets/images/support'), { recursive: true });
     }
+    const communityImages = resolve(import.meta.dirname, 'assets/images/community');
+    if (existsSync(communityImages)) {
+      cpSync(communityImages, resolve(import.meta.dirname, 'dist/assets/images/community'), { recursive: true });
+    }
+    const interfaceIcons = resolve(import.meta.dirname, 'assets/icons');
+    if (existsSync(interfaceIcons)) {
+      cpSync(interfaceIcons, resolve(import.meta.dirname, 'dist/assets/icons'), { recursive: true });
+    }
   },
 });
 
@@ -39,6 +47,8 @@ export default defineConfig({
         contact: resolve(import.meta.dirname, 'contact.html'),
         thanks: resolve(import.meta.dirname, 'thanks.html'),
         support: resolve(import.meta.dirname, 'support.html'),
+        guides: resolve(import.meta.dirname, 'guides.html'),
+        commercial: resolve(import.meta.dirname, 'commercial.html'),
         privacy: resolve(import.meta.dirname, 'privacy.html'),
         terms: resolve(import.meta.dirname, 'terms.html'),
         manual: resolve(import.meta.dirname, 'manual.html'),
