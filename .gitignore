@@ -5,3 +5,21 @@ dist/
 *.zip
 qa/screenshots/v3-*.png
 .DS_Store
+
+# Local credentials, private keys, certificates and databases.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.sqlite
+*.sqlite3
+*.db
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
