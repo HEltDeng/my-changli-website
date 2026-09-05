@@ -11,7 +11,7 @@
 - 首页学习、生活与提醒入口可跳转到功能页对应分区，并在视口中部定位。
 - 已增加“感谢开源”“支持开发者”页面；支持信息默认不显示，点击后优先打开已配置链接，链接为空时再显示对应二维码。
 - 首页已接入独立网站公告接口：公告栏位于导航下方，详情使用可访问的原生弹窗，未读状态按公告 `id + updatedAt` 保存在浏览器本地；APP公告不会串入官网。
-- Android V1.0.1 的 APK 地址、发布日期、文件大小和 SHA-256 已按当前发布配置展示。
+- Android V1.0.2 的 APK 地址、发布日期、文件大小和 SHA-256 已按当前发布配置展示。
 - iOS 入口为灰色不可点击状态。
 - ICP 备案号 `湘ICP备2026035265号-1` 已写入配置并出现在十二个公开页面页脚；公安联网备案字段为空并自动隐藏。
 - 本阶段仅执行本地开发与验收，不连接或修改生产服务器；网站公告表、后台 CRUD 与公开接口均在本地代码和隔离测试数据库验证。
@@ -55,6 +55,8 @@ my-changli-website/
 │  ├─ images/
 │  ├─ scripts/site.js
 │  └─ styles/site.css
+├─ downloads/
+│  └─ 我的长理-V1.0.2.apk
 ├─ config/
 │  ├─ site-config.json
 │  ├─ support-config.json
@@ -98,10 +100,10 @@ pnpm preview
 
 | 字段 | 说明 | 当前值 |
 | --- | --- | --- |
-| `version` | 纯版本号 | `1.0.1` |
-| `displayVersion` | 页面展示版本 | `V1.0.1` |
-| `releaseDate` | 实际发布日期 | `2026-08-25` |
-| `androidDownloadUrl` | APK 地址 | `/downloads/我的长理-V1.0.1.apk` |
+| `version` | 纯版本号 | `1.0.2` |
+| `displayVersion` | 页面展示版本 | `V1.0.2` |
+| `releaseDate` | 实际发布日期 | `2026-09-05` |
+| `androidDownloadUrl` | APK 地址 | `/downloads/我的长理-V1.0.2.apk` |
 | `apkSize` | 文件大小展示文本 | `5.75 MiB` |
 | `apkSha256` | 最终 APK 的 SHA-256 | 已配置 |
 | `iosStatus` | iOS 发布状态 | `coming-soon` |

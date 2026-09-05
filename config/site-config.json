@@ -1,10 +1,10 @@
 {
-  "version": "1.0.1",
-  "displayVersion": "V1.0.1",
-  "releaseDate": "2026-08-25",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.1.apk",
+  "version": "1.0.2",
+  "displayVersion": "V1.0.2",
+  "releaseDate": "2026-09-05",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.2.apk",
   "apkSize": "5.75 MiB",
-  "apkSha256": "71009F88CB3FA04B0EF57E4DDDD05632578B5646A0D5EC8A984A4A62B5736190",
+  "apkSha256": "65E842180BA9A706004F85D6856AEF308E4168135051B0224B2120BE3BD9E422",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,9 +31,18 @@
   },
   "releases": [
     {
-      "version": "V1.0.1",
+      "version": "V1.0.2",
       "status": "正式发布",
       "current": true,
+      "summary": "修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。",
+      "items": [
+        "修复开学前第 1 周预览与课程表日期范围定位"
+      ]
+    },
+    {
+      "version": "V1.0.1",
+      "status": "正式发布",
+      "current": false,
       "summary": "优化了一些使用细节，提升官网访问稳定性，没有新增功能。",
       "items": []
     },

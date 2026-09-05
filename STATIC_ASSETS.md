@@ -12,6 +12,7 @@
 | `assets/images/support/alipay.png` | 支付宝支持二维码，默认不展示 | 224,870 B |
 | `assets/images/support/wechat.png` | 微信支持二维码，默认不展示 | 154,011 B |
 | `assets/docs/MyChangli-V1.0.0-User-Manual.pdf` | V1.0.0 软件使用说明书 | 1,757,336 B |
+| `downloads/我的长理-V1.0.2.apk` | 当前正式 Android Release 安装包 | 6,028,071 B；SHA-256 `65E842180BA9A706004F85D6856AEF308E4168135051B0224B2120BE3BD9E422` |
 
 首页画面使用开发者本轮提供的 1200 × 2664 原始截图，QQ 群二维码使用开发者确认的群聊分享图片，均未进行缩放重编码；支持二维码沿用开发者已放入仓库的本地图片。未生成或伪造 APP 截图、安装包与支付信息。
 

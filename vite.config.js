@@ -32,6 +32,10 @@ const copyRuntimeFiles = () => ({
     if (existsSync(interfaceIcons)) {
       cpSync(interfaceIcons, resolve(import.meta.dirname, 'dist/assets/icons'), { recursive: true });
     }
+    const downloads = resolve(import.meta.dirname, 'downloads');
+    if (existsSync(downloads)) {
+      cpSync(downloads, resolve(import.meta.dirname, 'dist/downloads'), { recursive: true });
+    }
   },
 });
 
