@@ -1,6 +1,6 @@
 # 部署与更新说明
 
-本文只说明后续操作流程。本阶段未执行生产部署、服务器连接、Nginx 修改或线上服务变更。
+本文记录官网静态发布与 Android Release 的长期操作约束。生产部署由项目级 `Local-Automation/Invoke-MyChangliReleaseClosure.ps1` 统一编排；本仓库不保存生产凭据。
 
 ## 1. 发布前置条件
 
@@ -72,13 +72,15 @@
 7. 配置 APK 后，从公网下载并重新计算 SHA-256，与网页及发布记录比对。
 8. 记录发布时间、Git 提交、构建哈希、文件清单和回退位置。
 
-以上步骤仅是未来部署说明。本阶段不执行 SSH、上传、Nginx、SSL、云服务器或生产后端操作；本仓库不包含生产凭据或服务器配置。
+以上步骤描述静态站点的文件边界；实际生产上传由项目级自动化执行并在发布报告中记录备份、Git SHA 和公网结果。本仓库不包含生产凭据或服务器配置。
 
 ## Release manifest 与日期约束
 
 每个正式 Android Release 都要同步维护 `releases/latest.json`。它是官网同域的机器可读兜底清单，必须与 APK 的 `versionName`、`versionCode`、下载 URL、SHA-256、文件大小和正式发布日期一致；Vite 构建会把它复制到 `dist/releases/latest.json`。
 
 正式发布节点必须填写经发布记录核实的 `releaseDate`；规划中的版本不填写日期。当前已核实的正式日期为 V1.0.0 `2026-08-24`、V1.0.1 `2026-08-25`、V1.0.2 `2026-09-05`。部署前后要请求 manifest、下载页和线上 APK，并确认后端 `GET /api/v1/public/version/android` 返回同一 `versionCode`；客户端以生产后端为主源，只有后端失败或响应异常时才读取 manifest。
+
+从 V1.0.3 起，正式 Release 必须以真实 APK 为唯一版本事实源。不要手工分别填写官网与 Backend 的版本号、SHA 或大小；使用项目级 Release Closure 自动提取并同步。ProductionRelease 模式会强制执行官网 APK、`latest.json`、下载页、更新日志、Backend Update API、公网一致性和 Git gate，要求 `-CommitRelease` 提交官网 release metadata/APK，任何缺项都是 `FAIL / INCOMPLETE`。官网单独上传 APK 或只构建 `dist/` 不构成 Release。
 
 ## 7. 动态公告接入（未来部署说明）
 
@@ -88,4 +90,4 @@
 
 部署后人工检查：公告存在时栏位位于导航与 Hero 之间；无公告或 API 失败时栏位完全隐藏；长正文在对话框内部滚动；确认已读只影响当前浏览器；管理员编辑后 `updatedAt` 变化会再次提示。公告接口异常不得阻塞 Hero、下载、导航或其他页面。
 
-详细响应字段、已读 key、文本安全规则和跨域边界见 [ANNOUNCEMENTS.md](ANNOUNCEMENTS.md)。本阶段没有连接生产 API、修改 Nginx 或写入生产数据库。
+详细响应字段、已读 key、文本安全规则和跨域边界见 [ANNOUNCEMENTS.md](ANNOUNCEMENTS.md)。公告模块仍不参与 Release 版本同步；Release 的 Backend 版本发布和 Nginx/静态目录变更只由项目级自动化执行并记录。

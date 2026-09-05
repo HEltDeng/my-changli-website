@@ -70,41 +70,49 @@ if (config.community && typeof config.community === 'object') {
   check(config.community.qqGroupQrImage === '/assets/images/community/qq-group.jpg', 'Configured QQ group QR image is incorrect');
 }
 
-check(config.version === '1.0.2', 'Configured version must be 1.0.2');
-check(config.androidDownloadUrl === '/downloads/我的长理-V1.0.2.apk', 'Android download URL must match the V1.0.2 production APK');
-check(config.releaseDate === '2026-09-05', 'V1.0.2 release date is incorrect');
-check(config.apkSize === '5.75 MiB', 'V1.0.2 APK size is incorrect');
-check(config.apkSha256 === '65E842180BA9A706004F85D6856AEF308E4168135051B0224B2120BE3BD9E422', 'V1.0.2 APK SHA-256 is incorrect');
-const apkPath = resolve(root, 'downloads/我的长理-V1.0.2.apk');
-check(existsSync(apkPath), 'V1.0.2 APK download file is missing');
-if (existsSync(apkPath)) {
-  check(statSync(apkPath).size === 6028071, 'V1.0.2 APK download size is incorrect');
+const currentRelease = Array.isArray(config.releases)
+  ? config.releases.find((item) => item.current === true)
+  : null;
+const semverPattern = /^\d+\.\d+\.\d+$/;
+const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
+check(semverPattern.test(config.version), 'Configured version must use semantic versioning');
+check(config.displayVersion === `V${config.version}`, 'Configured displayVersion must match version');
+check(typeof config.androidDownloadUrl === 'string' && /^\/downloads\/我的长理-V\d+\.\d+\.\d+\.apk$/.test(config.androidDownloadUrl), 'Android download URL must identify the configured release');
+check(isoDatePattern.test(config.releaseDate), 'Configured releaseDate must be an ISO date');
+check(typeof config.apkSha256 === 'string' && /^[0-9A-F]{64}$/.test(config.apkSha256), 'Configured APK SHA-256 is invalid');
+check(currentRelease?.version === config.displayVersion, 'Current changelog entry must match the configured release');
+check(currentRelease?.status === '正式发布', 'Current changelog entry must be a formal release');
+check(currentRelease?.releaseDate === config.releaseDate, 'Current changelog date must match site releaseDate');
+const apkPath = resolve(root, decodeURIComponent(config.androidDownloadUrl).replace(/^\//, ''));
+const publishedFileSize = existsSync(apkPath) ? statSync(apkPath).size : -1;
+check(publishedFileSize >= 0, 'Configured APK download file is missing');
+if (publishedFileSize >= 0) {
+  const localSize = publishedFileSize;
+  const expectedSizeText = `${(localSize / (1024 * 1024)).toFixed(2)} MiB`;
+  check(config.apkSize === expectedSizeText, 'Configured APK size does not match the published file');
   const actualApkHash = createHash('sha256').update(readFileSync(apkPath)).digest('hex').toUpperCase();
-  check(actualApkHash === config.apkSha256, 'V1.0.2 APK download SHA-256 does not match site config');
+  check(actualApkHash === config.apkSha256, 'Published APK SHA-256 does not match site config');
 }
 check(config.iosDownloadUrl === '', 'iOS URL must stay empty until a real release URL is supplied');
 check(config.filing.icpNumber === '湘ICP备2026035265号-1', 'ICP number does not match the provided filing record');
 check(config.filing.publicSecurityNumber === '', 'Public security number must stay empty until issued');
-check(config.releases.map((item) => item.version).join(',') === 'V1.0.2,V1.0.1,V1.0.0,V2.0.0,V3.0.0', 'Release order must stay newest first');
-check(config.releases[0].summary === '修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。', 'V1.0.2 release summary is incorrect');
-check(config.releases[0].releaseDate === '2026-09-05', 'V1.0.2 release date is incorrect');
-check(config.releases[0].items.join(',') === '修复开学前第 1 周预览与课程表日期范围定位', 'V1.0.2 release items are incorrect');
-check(config.releases[1].summary === '优化了一些使用细节，提升官网访问稳定性，没有新增功能。', 'V1.0.1 release summary is incorrect');
-check(config.releases[1].releaseDate === '2026-08-25', 'V1.0.1 release date is incorrect');
-check(config.releases[1].items.length === 0, 'V1.0.1 must not claim new features');
-check(config.releases[2].summary === '正式发布首个版本。', 'V1.0.0 release summary is incorrect');
-check(config.releases[2].releaseDate === '2026-08-24', 'V1.0.0 release date is incorrect');
-check(config.releases[2].items.join(',') === '校园学习服务,教务查询,校园生活查询,上课提醒,桌面小组件', 'V1.0.0 release items are incorrect');
-check(config.releases.slice(3).every((item) => item.status === '规划中' && item.summary === '' && item.items.length === 0), 'Planned releases must only show status and must not promise features');
+check(Array.isArray(config.releases) && config.releases.length > 0, 'Release changelog must not be empty');
+check(config.releases.every((item) => item.version && item.status), 'Every changelog entry must have version and status');
+check(config.releases.filter((item) => item.status === '正式发布').every((item) => isoDatePattern.test(item.releaseDate)), 'Every formal release must have a real release date');
+check(config.releases.filter((item) => item.status === '规划中').every((item) => !item.releaseDate && item.summary === '' && item.items.length === 0), 'Planned releases must not claim publication dates or features');
+for (const [version, date] of Object.entries({ 'V1.0.0': '2026-08-24', 'V1.0.1': '2026-08-25', 'V1.0.2': '2026-09-05' })) {
+  const entry = config.releases.find((item) => item.version === version);
+  check(entry?.releaseDate === date, `${version} historical release date is incorrect`);
+}
 check(manifest.platform === 'android', 'Release manifest platform must be android');
 check(manifest.versionName === config.version, 'Release manifest versionName must match site config');
 check(manifest.displayVersion === config.displayVersion, 'Release manifest displayVersion must match site config');
-check(manifest.versionCode === 34, 'Release manifest versionCode must be 34');
-check(manifest.minimumVersionCode === 32, 'Release manifest minimumVersionCode must be 32');
-check(manifest.downloadUrl === 'https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.2.apk', 'Release manifest download URL is incorrect');
+check(Number.isInteger(manifest.versionCode) && manifest.versionCode > 0, 'Release manifest versionCode must be positive');
+check(Number.isInteger(manifest.minimumVersionCode) && manifest.minimumVersionCode >= 1 && manifest.minimumVersionCode <= manifest.versionCode, 'Release manifest minimumVersionCode is invalid');
+check(manifest.downloadUrl === new URL(config.androidDownloadUrl, 'https://mychangliapp.cn').href, 'Release manifest download URL must match site config');
 check(manifest.apkSha256 === config.apkSha256, 'Release manifest SHA-256 must match site config');
-check(manifest.apkSize === 6028071, 'Release manifest APK size is incorrect');
-check(manifest.updateMessage === config.releases[0].summary, 'Release manifest update message must match current release summary');
+check(manifest.apkSize === publishedFileSize, 'Release manifest APK size is incorrect');
+check(manifest.updateMessage === currentRelease?.summary, 'Release manifest update message must match current release summary');
 check(manifest.publishedAt === config.releaseDate, 'Release manifest publishedAt must match site release date');
 
 const getSupportUrlError = (supportUrl) => {
