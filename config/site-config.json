@@ -1,10 +1,10 @@
 {
-  "version": "1.0.2",
-  "displayVersion": "V1.0.2",
+  "version": "1.0.3",
+  "displayVersion": "V1.0.3",
   "releaseDate": "2026-09-05",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.2.apk",
-  "apkSize": "5.75 MiB",
-  "apkSha256": "65E842180BA9A706004F85D6856AEF308E4168135051B0224B2120BE3BD9E422",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.3.apk",
+  "apkSize": "5.76 MiB",
+  "apkSha256": "7AF94DD7E3F5466FEBBEC211C69F90F93C70EC4F452F42118DD8F3EA92C697B4",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,10 +31,23 @@
   },
   "releases": [
     {
-      "version": "V1.0.2",
+      "version": "V1.0.3",
       "status": "正式发布",
       "releaseDate": "2026-09-05",
       "current": true,
+      "summary": "支持 App 内更新、下载进度、断点续传和安装包完整性校验。",
+      "items": [
+        "支持在应用内下载并安装新版本",
+        "新增下载进度与断点续传",
+        "增加 APK 完整性、包名、版本号和签名校验",
+        "优化系统安装流程与失败恢复"
+      ]
+    },
+    {
+      "version": "V1.0.2",
+      "status": "正式发布",
+      "releaseDate": "2026-09-05",
+      "current": false,
       "summary": "修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。",
       "items": [
         "修复开学前第 1 周预览与课程表日期范围定位"
