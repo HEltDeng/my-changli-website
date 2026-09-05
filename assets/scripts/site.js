@@ -396,6 +396,15 @@ const formatAnnouncementDate = (value) => {
   }).format(date).replaceAll('/', '-');
 };
 
+const formatReleaseDate = (value) => {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(raw)) return '';
+  const [year, month, day] = raw.split('-');
+  const date = new Date(`${raw}T00:00:00+08:00`);
+  if (Number.isNaN(date.getTime())) return '';
+  return `${year}年${Number(month)}月${Number(day)}日`;
+};
+
 const announcementReadKey = (announcement) => (
   `${ANNOUNCEMENT_READ_KEY_PREFIX}${announcement.id}:${String(announcement.updatedAt || announcement.publishedAt || '')}`
 );
@@ -1009,13 +1018,17 @@ const setupTimeline = (config) => {
       const items = release.items.length
         ? `<ul>${release.items.map((item) => `<li>${item}</li>`).join('')}</ul>`
         : '';
+      const releaseDate = formatReleaseDate(release.releaseDate);
       return `
         <article class="timeline-item${release.current ? ' is-current' : ''}">
           <div class="timeline-dot" aria-hidden="true"></div>
           <div class="timeline-card">
             <div class="timeline-heading">
               <h2>${release.version}</h2>
-              <span>${release.status}</span>
+              <div class="timeline-status">
+                <span>${release.status}</span>
+                ${releaseDate ? `<time class="timeline-release-date" datetime="${release.releaseDate}">${releaseDate}</time>` : ''}
+              </div>
             </div>
             ${summary}
             ${items}

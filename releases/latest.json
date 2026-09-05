@@ -1,0 +1,13 @@
+{
+  "platform": "android",
+  "versionName": "1.0.2",
+  "displayVersion": "V1.0.2",
+  "versionCode": 34,
+  "minimumVersionCode": 32,
+  "downloadUrl": "https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.2.apk",
+  "apkSha256": "65E842180BA9A706004F85D6856AEF308E4168135051B0224B2120BE3BD9E422",
+  "apkSize": 6028071,
+  "updateMessage": "修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。",
+  "forceUpdate": false,
+  "publishedAt": "2026-09-05"
+}

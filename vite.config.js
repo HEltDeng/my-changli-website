@@ -7,6 +7,7 @@ const copyRuntimeFiles = () => ({
   name: 'copy-runtime-files',
   closeBundle() {
     mkdirSync(resolve(import.meta.dirname, 'dist/config'), { recursive: true });
+    mkdirSync(resolve(import.meta.dirname, 'dist/releases'), { recursive: true });
     mkdirSync(resolve(import.meta.dirname, 'dist/assets/docs'), { recursive: true });
     copyFileSync(
       resolve(import.meta.dirname, 'config/site-config.json'),
@@ -15,6 +16,10 @@ const copyRuntimeFiles = () => ({
     copyFileSync(
       resolve(import.meta.dirname, 'config/support-config.json'),
       resolve(import.meta.dirname, 'dist/config/support-config.json'),
+    );
+    copyFileSync(
+      resolve(import.meta.dirname, 'releases/latest.json'),
+      resolve(import.meta.dirname, 'dist/releases/latest.json'),
     );
     copyFileSync(
       resolve(import.meta.dirname, 'assets/docs/MyChangli-V1.0.0-User-Manual.pdf'),

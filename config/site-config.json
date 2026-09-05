@@ -33,6 +33,7 @@
     {
       "version": "V1.0.2",
       "status": "正式发布",
+      "releaseDate": "2026-09-05",
       "current": true,
       "summary": "修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。",
       "items": [
@@ -42,6 +43,7 @@
     {
       "version": "V1.0.1",
       "status": "正式发布",
+      "releaseDate": "2026-08-25",
       "current": false,
       "summary": "优化了一些使用细节，提升官网访问稳定性，没有新增功能。",
       "items": []
@@ -49,6 +51,7 @@
     {
       "version": "V1.0.0",
       "status": "正式发布",
+      "releaseDate": "2026-08-24",
       "current": false,
       "summary": "正式发布首个版本。",
       "items": [

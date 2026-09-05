@@ -30,6 +30,9 @@ const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const supportConfigPath = resolve(root, 'config/support-config.json');
 check(existsSync(supportConfigPath), 'Missing config/support-config.json');
 const supportConfig = JSON.parse(readFileSync(supportConfigPath, 'utf8'));
+const manifestPath = resolve(root, 'releases/latest.json');
+check(existsSync(manifestPath), 'Missing releases/latest.json');
+const manifest = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : {};
 
 for (const field of ['version', 'releaseDate', 'androidDownloadUrl', 'apkSize', 'apkSha256', 'iosStatus', 'iosDownloadUrl', 'publicApiBaseUrl', 'publicWebsiteAnnouncementsPath']) {
   check(Object.hasOwn(config, field), `Config field missing: ${field}`);
@@ -84,12 +87,25 @@ check(config.filing.icpNumber === '湘ICP备2026035265号-1', 'ICP number does n
 check(config.filing.publicSecurityNumber === '', 'Public security number must stay empty until issued');
 check(config.releases.map((item) => item.version).join(',') === 'V1.0.2,V1.0.1,V1.0.0,V2.0.0,V3.0.0', 'Release order must stay newest first');
 check(config.releases[0].summary === '修复 2026 秋季学期开学前后课程表的学期、周次和日期定位。', 'V1.0.2 release summary is incorrect');
+check(config.releases[0].releaseDate === '2026-09-05', 'V1.0.2 release date is incorrect');
 check(config.releases[0].items.join(',') === '修复开学前第 1 周预览与课程表日期范围定位', 'V1.0.2 release items are incorrect');
 check(config.releases[1].summary === '优化了一些使用细节，提升官网访问稳定性，没有新增功能。', 'V1.0.1 release summary is incorrect');
+check(config.releases[1].releaseDate === '2026-08-25', 'V1.0.1 release date is incorrect');
 check(config.releases[1].items.length === 0, 'V1.0.1 must not claim new features');
 check(config.releases[2].summary === '正式发布首个版本。', 'V1.0.0 release summary is incorrect');
+check(config.releases[2].releaseDate === '2026-08-24', 'V1.0.0 release date is incorrect');
 check(config.releases[2].items.join(',') === '校园学习服务,教务查询,校园生活查询,上课提醒,桌面小组件', 'V1.0.0 release items are incorrect');
 check(config.releases.slice(3).every((item) => item.status === '规划中' && item.summary === '' && item.items.length === 0), 'Planned releases must only show status and must not promise features');
+check(manifest.platform === 'android', 'Release manifest platform must be android');
+check(manifest.versionName === config.version, 'Release manifest versionName must match site config');
+check(manifest.displayVersion === config.displayVersion, 'Release manifest displayVersion must match site config');
+check(manifest.versionCode === 34, 'Release manifest versionCode must be 34');
+check(manifest.minimumVersionCode === 32, 'Release manifest minimumVersionCode must be 32');
+check(manifest.downloadUrl === 'https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.2.apk', 'Release manifest download URL is incorrect');
+check(manifest.apkSha256 === config.apkSha256, 'Release manifest SHA-256 must match site config');
+check(manifest.apkSize === 6028071, 'Release manifest APK size is incorrect');
+check(manifest.updateMessage === config.releases[0].summary, 'Release manifest update message must match current release summary');
+check(manifest.publishedAt === config.releaseDate, 'Release manifest publishedAt must match site release date');
 
 const getSupportUrlError = (supportUrl) => {
   if (typeof supportUrl !== 'string') return 'support URL must be a string';
@@ -190,6 +206,8 @@ check(siteScript.includes("{ page: 'guides', href: 'guides.html'"), 'site.js: pr
 check(siteScript.includes('setupCommunityActions'), 'site.js: community shortcuts are not wired');
 check(siteScript.includes('setupFooterEntries'), 'site.js: footer shortcut entries are not wired');
 check(siteScript.includes('setupGuides'), 'site.js: guide search is not wired');
+check(siteScript.includes('formatReleaseDate'), 'site.js: release date formatter is missing');
+check(siteScript.includes('timeline-release-date'), 'site.js: release date display is missing');
 check(!siteScript.toLowerCase().includes('telegram'), 'site.js: Telegram contact must not be included');
 check(/\.menu-button\s*\{[^}]*min-inline-size:\s*48px;[^}]*min-block-size:\s*48px;/s.test(siteCss), 'site.css: mobile menu button touch target must be at least 48px');
 check(/\.site-nav\[data-open="true"\]\s*\{[^}]*display:\s*flex;[^}]*flex-direction:\s*column;/s.test(siteCss), 'site.css: expanded mobile navigation must use a vertical flex layout');

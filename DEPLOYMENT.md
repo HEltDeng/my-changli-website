@@ -74,6 +74,12 @@
 
 以上步骤仅是未来部署说明。本阶段不执行 SSH、上传、Nginx、SSL、云服务器或生产后端操作；本仓库不包含生产凭据或服务器配置。
 
+## Release manifest 与日期约束
+
+每个正式 Android Release 都要同步维护 `releases/latest.json`。它是官网同域的机器可读兜底清单，必须与 APK 的 `versionName`、`versionCode`、下载 URL、SHA-256、文件大小和正式发布日期一致；Vite 构建会把它复制到 `dist/releases/latest.json`。
+
+正式发布节点必须填写经发布记录核实的 `releaseDate`；规划中的版本不填写日期。当前已核实的正式日期为 V1.0.0 `2026-08-24`、V1.0.1 `2026-08-25`、V1.0.2 `2026-09-05`。部署前后要请求 manifest、下载页和线上 APK，并确认后端 `GET /api/v1/public/version/android` 返回同一 `versionCode`；客户端以生产后端为主源，只有后端失败或响应异常时才读取 manifest。
+
 ## 7. 动态公告接入（未来部署说明）
 
 公告不写入官网 HTML，也不需要每次发布公告都重新构建网站。管理员在后端 `/admin/` 的“网站公告”栏目发布、编辑或撤回；首页下一次加载会读取独立的 `GET /api/v1/public/website-announcements`。
