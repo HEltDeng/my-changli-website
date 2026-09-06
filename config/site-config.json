@@ -1,10 +1,10 @@
 {
-  "version": "1.0.3",
-  "displayVersion": "V1.0.3",
-  "releaseDate": "2026-09-05",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.3.apk",
+  "version": "1.0.4",
+  "displayVersion": "V1.0.4",
+  "releaseDate": "2026-09-06",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.4.apk",
   "apkSize": "5.76 MiB",
-  "apkSha256": "7AF94DD7E3F5466FEBBEC211C69F90F93C70EC4F452F42118DD8F3EA92C697B4",
+  "apkSha256": "8DA13A68259DC6E4CF377CAE9AFB81A7D9070730B76262D66E7CBB777197303D",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,10 +31,18 @@
   },
   "releases": [
     {
+      "version": "V1.0.4",
+      "status": "正式发布",
+      "releaseDate": "2026-09-06",
+      "current": true,
+      "summary": "V1.0.4 完成身份统计、后台数据治理、用户编号与更新闭环整改。",
+      "items": []
+    },
+    {
       "version": "V1.0.3",
       "status": "正式发布",
       "releaseDate": "2026-09-05",
-      "current": true,
+      "current": false,
       "summary": "支持 App 内更新、下载进度、断点续传和安装包完整性校验。",
       "items": [
         "支持在应用内下载并安装新版本",
