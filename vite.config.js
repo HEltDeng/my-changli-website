@@ -1,5 +1,5 @@
 import { resolve } from 'node:path';
-import { copyFileSync, cpSync, existsSync, mkdirSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { defineConfig } from 'vite';
 import { sites } from '@openai/sites-vite-plugin';
 
@@ -44,8 +44,18 @@ const copyRuntimeFiles = () => ({
   },
 });
 
+const replaceReleasePlaceholders = () => ({
+  name: 'replace-release-placeholders',
+  transformIndexHtml(html) {
+    const config = JSON.parse(
+      readFileSync(resolve(import.meta.dirname, 'config/site-config.json'), 'utf8'),
+    );
+    return html.replaceAll('__MYCHANGLI_DISPLAY_VERSION__', config.displayVersion);
+  },
+});
+
 export default defineConfig({
-  plugins: [sites(), copyRuntimeFiles()],
+  plugins: [sites(), replaceReleasePlaceholders(), copyRuntimeFiles()],
   build: {
     rollupOptions: {
       input: {
