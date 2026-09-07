@@ -1,13 +1,13 @@
 {
   "platform": "android",
-  "versionName": "1.0.4",
-  "displayVersion": "V1.0.4",
-  "versionCode": 36,
+  "versionName": "1.0.5",
+  "displayVersion": "V1.0.5",
+  "versionCode": 37,
   "minimumVersionCode": 36,
-  "downloadUrl": "https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.4.apk",
-  "apkSha256": "8DA13A68259DC6E4CF377CAE9AFB81A7D9070730B76262D66E7CBB777197303D",
-  "apkSize": 6044507,
-  "updateMessage": "V1.0.4 完成身份统计、后台数据治理、用户编号与更新闭环整改。",
-  "forceUpdate": true,
-  "publishedAt": "2026-09-06"
+  "downloadUrl": "https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.5.apk",
+  "apkSha256": "8C8BB9EE2D569F7832B3F5283E0A6B1058804C2CCD48D1C2EC2F92B434AE33C2",
+  "apkSize": 6061359,
+  "updateMessage": "V1.0.5 新增重要公告通知提醒，优化首次使用、图标统一与桌面小组件预览。",
+  "forceUpdate": false,
+  "publishedAt": "2026-09-07"
 }
