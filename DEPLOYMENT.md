@@ -76,7 +76,7 @@
 
 ## Release manifest 与日期约束
 
-每个正式 Android Release 都要同步维护 `releases/latest.json`。它是官网同域的机器可读兜底清单，必须与 APK 的 `versionName`、`versionCode`、下载 URL、SHA-256、文件大小和正式发布日期一致；Vite 构建会把它复制到 `dist/releases/latest.json`。
+每个正式 Android Release 都要同步维护 `releases/latest.json`。它只保存可缓存的 Release Metadata，必须与 APK 的 `versionName`、`versionCode`、下载 URL、SHA-256、文件大小和正式发布日期一致；Vite 构建会把它复制到 `dist/releases/latest.json`。`forceUpdate`、`minimumVersionCode`、策略 Revision 等实时控制字段禁止写入该静态文件，统一由 Backend Update Policy API 返回。
 
 正式发布节点必须填写经发布记录核实的 `releaseDate`；规划中的版本不填写日期。当前已核实的正式日期为 V1.0.0 `2026-08-24`、V1.0.1 `2026-08-25`、V1.0.2 `2026-09-05`。部署前后要请求 manifest、下载页和线上 APK，并确认后端 `GET /api/v1/public/version/android` 返回同一 `versionCode`；客户端以生产后端为主源，只有后端失败或响应异常时才读取 manifest。
 

@@ -108,7 +108,8 @@ check(manifest.platform === 'android', 'Release manifest platform must be androi
 check(manifest.versionName === config.version, 'Release manifest versionName must match site config');
 check(manifest.displayVersion === config.displayVersion, 'Release manifest displayVersion must match site config');
 check(Number.isInteger(manifest.versionCode) && manifest.versionCode > 0, 'Release manifest versionCode must be positive');
-check(Number.isInteger(manifest.minimumVersionCode) && manifest.minimumVersionCode >= 1 && manifest.minimumVersionCode <= manifest.versionCode, 'Release manifest minimumVersionCode is invalid');
+check(!Object.hasOwn(manifest, 'minimumVersionCode'), 'Static release metadata must not contain minimumVersionCode policy');
+check(!Object.hasOwn(manifest, 'forceUpdate'), 'Static release metadata must not contain forceUpdate policy');
 check(manifest.downloadUrl === new URL(config.androidDownloadUrl, 'https://mychangliapp.cn').href, 'Release manifest download URL must match site config');
 check(manifest.apkSha256 === config.apkSha256, 'Release manifest SHA-256 must match site config');
 check(manifest.apkSize === publishedFileSize, 'Release manifest APK size is incorrect');
