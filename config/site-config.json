@@ -1,10 +1,10 @@
 {
-  "version": "1.0.4",
-  "displayVersion": "V1.0.4",
-  "releaseDate": "2026-09-06",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.4.apk",
-  "apkSize": "5.76 MiB",
-  "apkSha256": "8DA13A68259DC6E4CF377CAE9AFB81A7D9070730B76262D66E7CBB777197303D",
+  "version": "1.0.5",
+  "displayVersion": "V1.0.5",
+  "releaseDate": "2026-10-01",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.5-20261001.apk",
+  "apkSize": "6.83 MiB",
+  "apkSha256": "936223F8A7D7E40DBB1929433190CE325073AE689E1BA36C4B90B7E56B538E0A",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,10 +31,26 @@
   },
   "releases": [
     {
+      "version": "V1.0.5",
+      "status": "正式发布",
+      "releaseDate": "2026-10-01",
+      "current": true,
+      "summary": "优化启动与首次使用体验，修复引导页崩溃，完善设置、公告通知与版本更新。",
+      "items": [
+        "优化冷启动品牌卡片，改善图标裁切、圆角和清晰度",
+        "优化欢迎与登录引导页的品牌图标、留白及淡蓝色阴影",
+        "修复隐私同意页和账号引导页的图标加载崩溃",
+        "整理账号、绑定学号等设置入口图标及检查更新状态",
+        "减少启动版本检查等待，完善普通更新、前后台重查及强更撤回",
+        "完善重要公告通知选项和桌面小组件预览",
+        "为已支持的功能入口提供受限动态配置基础，不代表所有功能都能免APK更新"
+      ]
+    },
+    {
       "version": "V1.0.4",
       "status": "正式发布",
       "releaseDate": "2026-09-06",
-      "current": true,
+      "current": false,
       "summary": "V1.0.4 完成身份统计、后台数据治理、用户编号与更新闭环整改。",
       "items": []
     },

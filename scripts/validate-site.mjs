@@ -77,7 +77,7 @@ const semverPattern = /^\d+\.\d+\.\d+$/;
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 check(semverPattern.test(config.version), 'Configured version must use semantic versioning');
 check(config.displayVersion === `V${config.version}`, 'Configured displayVersion must match version');
-check(typeof config.androidDownloadUrl === 'string' && /^\/downloads\/我的长理-V\d+\.\d+\.\d+\.apk$/.test(config.androidDownloadUrl), 'Android download URL must identify the configured release');
+check(typeof config.androidDownloadUrl === 'string' && /^\/downloads\/我的长理-V\d+\.\d+\.\d+(?:-\d{8})?\.apk$/.test(config.androidDownloadUrl), 'Android download URL must identify the configured release');
 check(isoDatePattern.test(config.releaseDate), 'Configured releaseDate must be an ISO date');
 check(typeof config.apkSha256 === 'string' && /^[0-9A-F]{64}$/.test(config.apkSha256), 'Configured APK SHA-256 is invalid');
 check(currentRelease?.version === config.displayVersion, 'Current changelog entry must match the configured release');

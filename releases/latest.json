@@ -1,11 +1,13 @@
 {
   "platform": "android",
-  "versionName": "1.0.4",
-  "displayVersion": "V1.0.4",
-  "versionCode": 36,
-  "downloadUrl": "https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.4.apk",
-  "apkSha256": "8DA13A68259DC6E4CF377CAE9AFB81A7D9070730B76262D66E7CBB777197303D",
-  "apkSize": 6044507,
-  "updateMessage": "V1.0.4 完成身份统计、后台数据治理、用户编号与更新闭环整改。",
-  "publishedAt": "2026-09-06"
+  "versionName": "1.0.5",
+  "displayVersion": "V1.0.5",
+  "versionCode": 37,
+  "downloadUrl": "https://mychangliapp.cn/downloads/%E6%88%91%E7%9A%84%E9%95%BF%E7%90%86-V1.0.5-20261001.apk",
+  "apkSha256": "936223F8A7D7E40DBB1929433190CE325073AE689E1BA36C4B90B7E56B538E0A",
+  "apkSize": 7163474,
+  "packageName": "com.mychangli.app",
+  "signingCertificateSha256": "2C3B934931C26719C1A55FA707760A41E18BA15B00561F97691FE1D452F4BF3D",
+  "updateMessage": "优化启动与首次使用体验，修复引导页崩溃，完善设置、公告通知与版本更新。",
+  "publishedAt": "2026-10-01"
 }
