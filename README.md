@@ -1,3 +1,6 @@
+> 当前入口（2026-10-01 第二阶段整理）：Android `D:\Codex\01_App-应用开发\001_MyChangLi-我的长理\01_Source-当前源码\01_Android`；Backend/Admin `D:\Codex\01_App-应用开发\001_MyChangLi-我的长理\01_Source-当前源码\02_Backend-Admin`；Website `D:\Codex\01_App-应用开发\001_MyChangLi-我的长理\01_Source-当前源码\03_Website`。
+> 以项目根目录 SOURCE_OF_TRUTH.md 与 04_Tools/source-identity.json 为现行导航。下文旧路径、候选状态、V1.0.4/2.0.9 环境验证属于历史记录，不得作为新的开发起点。
+
 # 我的长理独立发布官网
 
 “我的长理”独立发布与下载页面源码。网站是个人开发者项目发布站，采用纯静态 HTML、CSS 与原生 JavaScript，不包含用户系统、数据库、评论、社区、在线表单或第三方统计 SDK。

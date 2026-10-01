@@ -1,0 +1,110 @@
+﻿#requires -Version 5.1
+
+[CmdletBinding()]
+param(
+    [ValidateSet("Inspect", "Deploy")]
+    [string]$Action = "Inspect",
+    [string]$DistPath = "D:\Codex\01_App-应用开发\001_MyChangLi-我的长理\01_Source-当前源码\03_Website\dist",
+    [string]$RuntimeRoot = ""
+)
+
+$ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+if ([string]::IsNullOrWhiteSpace($RuntimeRoot)) {
+    $RuntimeRoot = Join-Path -Path $PSScriptRoot -ChildPath "runtime\backend-password-runtime"
+}
+
+function Convert-SecureValueToPlainText {
+    param([Parameter(Mandatory = $true)][object]$Value)
+
+    if ($Value -is [System.Management.Automation.PSCredential]) {
+        return $Value.GetNetworkCredential().Password
+    }
+    if ($Value -is [System.Security.SecureString]) {
+        $pointer = [System.IntPtr]::Zero
+        try {
+            $pointer = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Value)
+            return [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
+        } finally {
+            if ($pointer -ne [System.IntPtr]::Zero) {
+                [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer)
+            }
+        }
+    }
+    throw "Backend credential record is invalid."
+}
+
+$recordPath = Join-Path $env:LOCALAPPDATA "MyChangli\Secrets\backend-key-sudo.clixml"
+if (-not (Test-Path -LiteralPath $recordPath -PathType Leaf)) {
+    throw "Backend key/sudo record is missing. Run Register-MyChangliBackendKeySudo.ps1 first."
+}
+$record = Import-Clixml -LiteralPath $recordPath
+foreach ($propertyName in @("HostName", "Port", "UserName", "IdentityFile", "KeyPassphrase", "SudoPassword")) {
+    if (-not $record.PSObject.Properties[$propertyName]) {
+        throw "Backend key/sudo record is missing '$propertyName'."
+    }
+}
+if (-not (Test-Path -LiteralPath ([string]$record.IdentityFile) -PathType Leaf)) {
+    throw "SSH private key file was not found: $($record.IdentityFile)"
+}
+
+$resolvedDist = (Resolve-Path -LiteralPath $DistPath).Path
+if (-not (Test-Path -LiteralPath (Join-Path $resolvedDist "index.html") -PathType Leaf)) {
+    throw "Website dist is incomplete: index.html is missing."
+}
+if (-not (Test-Path -LiteralPath (Join-Path $resolvedDist "assets\images\community\qq-group.jpg") -PathType Leaf)) {
+    throw "Website dist is incomplete: QQ group QR image is missing."
+}
+if (-not (Test-Path -LiteralPath (Join-Path $resolvedDist "assets\icons\qq.svg") -PathType Leaf)) {
+    throw "Website dist is incomplete: interface icons are missing."
+}
+
+$python = Join-Path $RuntimeRoot "venv\Scripts\python.exe"
+$pythonScript = Join-Path $PSScriptRoot "website_deploy.py"
+if (-not (Test-Path -LiteralPath $python -PathType Leaf)) {
+    throw "Backend password runtime is missing. Run Install-MyChangliBackendPasswordRuntime.ps1 first."
+}
+
+Write-Host ("Website deployment target: {0}:{1} as {2}" -f $record.HostName, $record.Port, $record.UserName) -ForegroundColor DarkGray
+Write-Host ("Action: {0}" -f $Action) -ForegroundColor DarkGray
+
+$envNames = @(
+    "MY_CHANGLI_BACKEND_HOST",
+    "MY_CHANGLI_BACKEND_PORT",
+    "MY_CHANGLI_BACKEND_USER",
+    "MY_CHANGLI_BACKEND_IDENTITY_FILE",
+    "MY_CHANGLI_BACKEND_KEY_PASSPHRASE",
+    "MY_CHANGLI_BACKEND_SUDO_PASSWORD",
+    "MY_CHANGLI_WEBSITE_ACTION",
+    "MY_CHANGLI_WEBSITE_DIST"
+)
+$previous = @{}
+foreach ($name in $envNames) {
+    $previous[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
+}
+$exitCode = 0
+try {
+    $env:MY_CHANGLI_BACKEND_HOST = [string]$record.HostName
+    $env:MY_CHANGLI_BACKEND_PORT = [string]$record.Port
+    $env:MY_CHANGLI_BACKEND_USER = [string]$record.UserName
+    $env:MY_CHANGLI_BACKEND_IDENTITY_FILE = [string]$record.IdentityFile
+    $env:MY_CHANGLI_BACKEND_KEY_PASSPHRASE = Convert-SecureValueToPlainText -Value $record.KeyPassphrase
+    $env:MY_CHANGLI_BACKEND_SUDO_PASSWORD = Convert-SecureValueToPlainText -Value $record.SudoPassword
+    $env:MY_CHANGLI_WEBSITE_ACTION = $Action.ToLowerInvariant()
+    $env:MY_CHANGLI_WEBSITE_DIST = $resolvedDist
+
+    & $python $pythonScript
+    $exitCode = $LASTEXITCODE
+} finally {
+    foreach ($name in $envNames) {
+        if ($null -eq $previous[$name]) {
+            Remove-Item "Env:$name" -ErrorAction SilentlyContinue
+        } else {
+            [Environment]::SetEnvironmentVariable($name, $previous[$name], "Process")
+        }
+    }
+}
+
+if ($exitCode -ne 0) {
+    exit $exitCode
+}
