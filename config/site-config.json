@@ -1,10 +1,10 @@
 {
-  "version": "1.0.5",
-  "displayVersion": "V1.0.5",
-  "releaseDate": "2026-10-01",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.5-20261001.apk",
+  "version": "1.0.6",
+  "displayVersion": "V1.0.6",
+  "releaseDate": "2026-10-03",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.6.apk",
   "apkSize": "6.83 MiB",
-  "apkSha256": "936223F8A7D7E40DBB1929433190CE325073AE689E1BA36C4B90B7E56B538E0A",
+  "apkSha256": "60B7D5B0DF69207F16C58365ED1126A2ACAFE69677424C5BECCB1B5A8EF4A291",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,10 +31,23 @@
   },
   "releases": [
     {
+      "version": "V1.0.6",
+      "status": "正式发布",
+      "releaseDate": "2026-10-03",
+      "current": true,
+      "summary": "新增可选设备与使用统计，完善安装身份、隐私控制及账号设备关联。",
+      "items": [
+        "新增独立的设备与使用统计告知，可拒绝并随时撤回",
+        "完善安装标识持久化、前台活跃上报与失败重试",
+        "登录、退出和覆盖升级保持安装身份，设备资料按同意范围补齐",
+        "本次为普通更新，保留现有强制更新撤回和公告去重能力"
+      ]
+    },
+    {
       "version": "V1.0.5",
       "status": "正式发布",
       "releaseDate": "2026-10-01",
-      "current": true,
+      "current": false,
       "summary": "优化启动与首次使用体验，修复引导页崩溃，完善设置、公告通知与版本更新。",
       "items": [
         "优化冷启动品牌卡片，改善图标裁切、圆角和清晰度",
