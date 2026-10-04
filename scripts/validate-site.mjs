@@ -113,7 +113,7 @@ check(!Object.hasOwn(manifest, 'forceUpdate'), 'Static release metadata must not
 check(manifest.downloadUrl === new URL(config.androidDownloadUrl, 'https://mychangliapp.cn').href, 'Release manifest download URL must match site config');
 check(manifest.apkSha256 === config.apkSha256, 'Release manifest SHA-256 must match site config');
 check(manifest.apkSize === publishedFileSize, 'Release manifest APK size is incorrect');
-check(manifest.updateMessage === currentRelease?.summary, 'Release manifest update message must match current release summary');
+check([currentRelease?.summary, currentRelease?.items?.join('\n')].includes(manifest.updateMessage), 'Release manifest update message must match current release summary or complete items');
 check(manifest.publishedAt === config.releaseDate, 'Release manifest publishedAt must match site release date');
 
 const getSupportUrlError = (supportUrl) => {

@@ -1,10 +1,10 @@
 {
-  "version": "1.0.6",
-  "displayVersion": "V1.0.6",
-  "releaseDate": "2026-10-03",
-  "androidDownloadUrl": "/downloads/我的长理-V1.0.6.apk",
-  "apkSize": "6.83 MiB",
-  "apkSha256": "60B7D5B0DF69207F16C58365ED1126A2ACAFE69677424C5BECCB1B5A8EF4A291",
+  "version": "1.0.7",
+  "displayVersion": "V1.0.7",
+  "releaseDate": "2026-10-04",
+  "androidDownloadUrl": "/downloads/我的长理-V1.0.7.apk",
+  "apkSize": "6.84 MiB",
+  "apkSha256": "D932142B5A07756F1FEEA557AD2C70B8B0A555BBD070CC945236B531645A9E1D",
   "iosStatus": "coming-soon",
   "iosDownloadUrl": "",
   "publicApiBaseUrl": "",
@@ -31,10 +31,24 @@
   },
   "releases": [
     {
+      "version": "V1.0.7",
+      "status": "正式发布",
+      "releaseDate": "2026-10-04",
+      "current": true,
+      "summary": "优化提醒设置与页面交互，独立管理桌面小组件，统一内嵌网页菜单。",
+      "items": [
+        "调整设置入口，上课提醒与桌面小组件独立管理。",
+        "优化提醒时间与提醒方式的选择交互，统一单选按钮和开关样式。",
+        "优化提醒状态展示，支持从系统设置返回后同步实际权限状态。",
+        "调整相关页面层级与返回交互。",
+        "统一四六级、普通话等内嵌网页的“更多”菜单，优化位置、样式与常用操作。"
+      ]
+    },
+    {
       "version": "V1.0.6",
       "status": "正式发布",
       "releaseDate": "2026-10-03",
-      "current": true,
+      "current": false,
       "summary": "新增可选设备与使用统计，完善安装身份、隐私控制及账号设备关联。",
       "items": [
         "新增独立的设备与使用统计告知，可拒绝并随时撤回",

@@ -406,7 +406,9 @@ const formatReleaseDate = (value) => {
 };
 
 const announcementReadKey = (announcement) => (
-  `${ANNOUNCEMENT_READ_KEY_PREFIX}${announcement.id}:${String(announcement.updatedAt || announcement.publishedAt || '')}`
+  announcement.id.startsWith('release-')
+    ? `${ANNOUNCEMENT_READ_KEY_PREFIX}${announcement.id}`
+    : `${ANNOUNCEMENT_READ_KEY_PREFIX}${announcement.id}:${String(announcement.updatedAt || announcement.publishedAt || '')}`
 );
 
 const isAnnouncementRead = (announcement) => {
