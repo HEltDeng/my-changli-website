@@ -551,6 +551,8 @@ const setupAnnouncements = (config) => {
       const announcement = announcements[0];
       renderAnnouncement(announcement);
       if (!isAnnouncementRead(announcement)) {
+        // A release is announced once per stable identity, including after reload.
+        if (announcement.id.startsWith('release-')) markAnnouncementRead(announcement);
         window.requestAnimationFrame(() => openDialog(announcement));
       }
     } catch (error) {
