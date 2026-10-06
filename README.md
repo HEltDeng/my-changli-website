@@ -145,3 +145,9 @@ pnpm preview
 - 线性界面图标来自 Lucide，许可说明见 `THIRD_PARTY_NOTICES.md`。
 - 上游开源项目致谢见 `thanks.html` 与 `THIRD_PARTY_NOTICES.md`。
 - 静态资源明细见 `STATIC_ASSETS.md`。
+
+## Mac 源码恢复与发行附件
+
+仓库 `HEltDeng/my-changli-website`，分支 `main`。Node.js 22.13+，运行 `npm ci`、`npm run build`、`npm run dev`；不依赖 Windows 绝对路径。
+`assets/` 中页面实际引用的图片与品牌资源保留在 Git。`qa/screenshots/` 是过程截图，`downloads/*.apk` 是发行附件，均不再进入当前源码树；已有 Windows 文件保留，历史不改写。
+页面构建不生成 APK。若需恢复带下载附件的完整站点，从 `HEltDeng/my-changli-android` 已有正式 GitHub Release 取对应版本 APK，按 Release Notes / SHA256SUMS 核验后放回 downloads；不得用重新编译的 APK 冒充已有发行物。本次不部署站点，不创建或覆盖 Release。

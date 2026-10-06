@@ -70,13 +70,7 @@
 
 ## 截图与视觉复核
 
-本轮保存的是实际视口截图，避免长页拼接对滚动动画产生视觉伪影：
-
-- `qa/screenshots/v3-home-mobile-390.png`
-- `qa/screenshots/v3-thanks-mobile-390.png`
-- `qa/screenshots/v3-support-mobile-390.png`
-- `qa/screenshots/v3-updates-mobile-390.png`
-- `qa/screenshots/v3-home-desktop-1440.png`
+本轮曾保存实际视口截图，避免长页拼接对滚动动画产生视觉伪影。上述图片属于内部 QA 过程产物，已按 2026-09-08 第二阶段清洗授权删除；本报告保留文字验收结论，当前官网正式素材仍在 `assets/` 中。
 
 视觉复核确认：淡蓝色体系、极简产品风格、线性图标、双栏桌面结构、手机外框与旋转展示效果均保留；未增加复杂动画或第三方视觉依赖。
 
